@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Release Notes for FP-SNS-SMARTAG2 STM32Cube Function Pack</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="_htmresc/mini-st.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+  <link rel="icon" type="image/x-icon" href="_htmresc/favicon.png" />
+</head>
+<body>
+<div class="row">
+<div class="col-sm-12 col-lg-4">
+<center>
+<h1 id="release-notes-for-fp-sns-smartag2-software-for-stm32"><small>Release Notes for</small> <strong>FP-SNS-SMARTAG2 Software for STM32</strong></h1>
+<p>Copyright © 2023 STMicroelectronics<br />
+</p>
+<a href="https://www.st.com" class="logo"><img src="_htmresc/st_logo.png" alt="ST logo" /></a>
+</center>
+<h1 id="purpose">Purpose</h1>
+<p>The <strong>FP-SNS-SMARTAG2</strong> is an STM32Cube function pack. Thanks to this package you can read the ambient light, motion and environmental sensor data on your IoT node by the means of an NFC enabled reader, such as a mobile phone or tablet, throught a suitable AndroidST or iOST application such as the ST Asset Tracking (Version 3.1.0 or higher) and ST NFC Sensor (Version 1.3.0 or higher). The package supports battery operated use cases. This software together with the suggested combination of STM32 and ST devices can be used, for example, to develop tracking, cold chain, medical, smart sensing and smart home/city/building applications. The software runs on an ultra-low power STM32L4 microcontroller and includes drivers for the Dynamic NFC tag and for the ambient light, motion and environmental sensors, as well as on the STEVAL-SMARTAG2 evaluation boards.</p>
+<p>The expansion is built on STM32Cube software technology to ease portability across different STM32 microcontrollers.</p>
+<h1 id="fp-sns-smartag2-software-features">FP-SNS-SMARTAG2 software features:</h1>
+<ul>
+<li><p>Complete firmware to access data from an IoT node with dynamic NFC tag, environmental, motion and ambient light sensors</p></li>
+<li><p>Compatible with the STAssetTracking application for Android/iOS for reading data logs from the NFC tag and for sending them to the DSH-ASSET RACKING cloud-based dashboard</p></li>
+<li><p>Compatible with the STNFCSensor Application for Android/iOS for reading and setting the data Logs</p></li>
+<li><p>Sample implementation available for the STEVAL-SMARTAG2 evaluation board</p></li>
+<li><p>Easy portability across different MCU families, thanks to STM32Cube</p></li>
+</ul>
+<p>This firmware package includes Components Device Drivers, Board Support Package and example application for the STMicroelectronics:</p>
+<ul>
+<li>STEVAL-SMARTAG2 (SmarTag2) evaluation board that contains the following components:
+<ul>
+<li>MEMS sensor devices (LPS22DF, STTS22H, LIS2DUX12, H3LIS331DL, LSM6DSO32X)</li>
+<li>ambient light sensors(VD6283TX)</li>
+<li>dynamic NFC tag (ST25DV64KC)</li>
+</ul></li>
+</ul>
+<h1 id="for-each-board-support-this-package-contains-the-following-projects">For each board support, this package contains the following projects:</h1>
+<ul>
+<li><p><strong>Example</strong>:</p>
+<ul>
+<li><strong>SimpleBootLoader</strong>: apply the firmware updated replacing the current running firmware with the new version received via NFC or runs the current firmware if the new version is not available.</li>
+<li><strong>SmarTag2</strong>: reads the ambient light, motion and environmental sensor data on your IoT node by the means of an NFC enabled reader, such as a mobile phone or tablet, throught a suitable AndroidST or iOST application such as the ST Asset Tracking.</li>
+</ul></li>
+<li><p><strong>Applications</strong>:</p>
+<ul>
+<li><strong>FirmwareUpdate</strong>: it saves the new firwmare received via NFC using the ST FTM protocol and saves it on the right flash region and works with the SimpleBootLoader example for enabling the Firmware Update capability.</li>
+</ul></li>
+</ul>
+<p>The figure below shows the overall architecture: <img src="_htmresc/FP-SNS-SMARTAG2_Software_Architecture.png" /></p>
+<p>Here is the list of references to user documents:</p>
+<ul>
+<li><a href="http://www.st.com/resource/en/product_presentation/fp-sns-SMARTAG2_quick_start_guide.pdf">QSG</a> : STM32Cube function pack for IoT node with Dynamic NFC Tag, environmental, motion and ambient light sensors</li>
+<li><a href="http://www.st.com/stm32cube">STM32Cube</a> : STM32Cube</li>
+<li><a href="http://www.st.com/stm32nucleo">STM32 Nucleo boards</a> : STM32 Nucleo boards</li>
+</ul>
+</div>
+<div class="col-sm-12 col-lg-8">
+<h1 id="update-history">Update History</h1>
+<div class="collapse">
+<input type="checkbox" id="collapse-section3" checked aria-hidden="true"> <label for="collapse-section3" aria-hidden="true">V1.0.2 / 30-January-2023</label>
+<div>
+<h2 id="main-changes">Main Changes</h2>
+<h3 id="maintenance-release">Maintenance release</h3>
+<ul>
+<li>Added capability to Fix incorrect CC file</li>
+</ul>
+<h2 id="contents">Contents</h2>
+<p>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</p>
+<table>
+<caption>Documentation<br />
+</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">FP-SNS-SMARTAG2_STEVAL-SMARTAG2 Doxygen documentation</td>
+<td style="text-align: left;">1.0.2 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Documentation\FP-SNS-SMARTAG2_STM32L4P5CG-SmarTag2.chm">CHM</a></td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Projects</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">STM32L4P5CG-SmarTag2/Examples/SimpleBootLoader</td>
+<td style="text-align: left;">1.0.2 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Projects/STM32L4P5CG-SmarTag2/Examples/SimpleBootLoader/readme.html">Read Me</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STM32L4P5CG-SmarTag2/Examples/SmarTag2</td>
+<td style="text-align: left;">1.0.2 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Projects/STM32L4P5CG-SmarTag2/Examples/SmarTag2/readme.html">Read Me</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">STM32L4P5CG-SmarTag2/Applications/FirmwareUpdate</td>
+<td style="text-align: left;">1.0.2 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Projects/STM32L4P5CG-SmarTag2/Applications/FirmwareUpdate/readme.html">Read Me</a></td>
+</tr>
+</tbody>
+</table>
+<p><br />
+</p>
+<table>
+<caption>Drivers<br />
+</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">STM32L4xx CMSIS</td>
+<td style="text-align: left;">1.7.2</td>
+<td style="text-align: left;"><a href="Drivers\CMSIS\Device\ST\STM32L4xx\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STM32L4xx HAL</td>
+<td style="text-align: left;">1.13.2</td>
+<td style="text-align: left;"><a href="Drivers\STM32L4xx_HAL_Driver\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BSP STEVAL-SMARTAG2</td>
+<td style="text-align: left;">1.0.0</td>
+<td style="text-align: left;"><a href="Drivers\BSP\SmarTag2\Release_Notes.html">release notes</a></td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Components<br />
+</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">lps22df</td>
+<td style="text-align: left;">1.2.0 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\lps22df\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stts22h</td>
+<td style="text-align: left;">1.4.0 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\stts22h\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">lsm6dso32x</td>
+<td style="text-align: left;">1.2.0 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\lsm6dso32x\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">h3lis331dl</td>
+<td style="text-align: left;">1.3.0 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\h3lis331dl\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">vd6283tx</td>
+<td style="text-align: left;">1.0.2 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\vd6283tx\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">st25dvxxkc</td>
+<td style="text-align: left;">2.0.1</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\st25dvxxkc\Release_Notes.html">release notes</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="known-limitations">Known Limitations</h2>
+<ul>
+<li>None</li>
+</ul>
+<h2 id="known-issues">Known Issues</h2>
+<ul>
+<li>None</li>
+</ul>
+<h2 id="development-toolchains-and-compilers">Development Toolchains and Compilers</h2>
+<ul>
+<li>IAR Embedded Workbench for ARM (EWARM) toolchain V9.20.1 + STLink/V2</li>
+<li>RealView Microcontroller Development Kit (MDK-ARM) toolchain V5.37.0 + ST-LINK/V2</li>
+<li>Integrated Development Environment for STM32 (STM32CubeIDE) V1.11.0 + ST-LINK</li>
+</ul>
+<h2 id="supported-devices-and-boards">Supported Devices and Boards</h2>
+<ul>
+<li>STEVAL-SMARTAG2 NFC dynamic tag sensor and processing node evaluation board [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/st25-nfc-rfid-eval-tools/st25-nfc-rfid-eval-boards/steval-SMARTAG2.html">STEVAL-SMARTAG2</a>]</li>
+</ul>
+<h2 id="backward-compatibility">Backward Compatibility</h2>
+<p>None</p>
+<h2 id="dependencies">Dependencies</h2>
+<p>This software release is compatible with:</p>
+<ul>
+<li><a href="https://play.google.com/store/apps/details?id=com.st.assetTracking"><strong>ST Asset Tracking Android application</strong></a> V3.1.0 (or higher)</li>
+<li><a href="https://apps.apple.com/it/app/st-asset-tracking/id1483734401"><strong>ST Asset Tracking iOS application</strong></a> V3.1.0 (or higher)</li>
+<li><a href="https://play.google.com/store/apps/details?id=com.st.smartTag"><strong>ST NFC Sensor Android application</strong></a> V1.3.0 (or higher)</li>
+<li><a href="https://apps.apple.com/it/app/st-nfc-sensor/id1377274569"><strong>ST NFC Sensor iOS application</strong></a> V1.3.0 (or higher)</li>
+</ul>
+</div>
+</div>
+<div class="collapse">
+<input type="checkbox" id="collapse-section2" aria-hidden="true"> <label for="collapse-section2" aria-hidden="true">V1.0.1 / 05-December-2022</label>
+<div>
+<h2 id="main-changes-1">Main Changes</h2>
+<h3 id="maintenance-release-1">Maintenance release</h3>
+<ul>
+<li>Fixed a Bug for Epoch Time computation</li>
+<li>Added the capability to reset the Tag pressing 3 times (in 3 seconds) the User Button</li>
+</ul>
+<h2 id="contents-1">Contents</h2>
+<p>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</p>
+<table>
+<caption>Documentation<br />
+</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">FP-SNS-SMARTAG2_STEVAL-SMARTAG2 Doxygen documentation</td>
+<td style="text-align: left;">1.0.1 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Documentation\FP-SNS-SMARTAG2_STM32L4P5CG-SmarTag2.chm">CHM</a></td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Projects</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">STM32L4P5CG-SmarTag2/Examples/SimpleBootLoader</td>
+<td style="text-align: left;">1.0.0</td>
+<td style="text-align: left;"><a href="Projects/STM32L4P5CG-SmarTag2/Examples/SimpleBootLoader/readme.html">Read Me</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STM32L4P5CG-SmarTag2/Examples/SmarTag2</td>
+<td style="text-align: left;">1.0.1 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Projects/STM32L4P5CG-SmarTag2/Examples/SmarTag2/readme.html">Read Me</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">STM32L4P5CG-SmarTag2/Applications/FirmwareUpdate</td>
+<td style="text-align: left;">1.0.0</td>
+<td style="text-align: left;"><a href="Projects/STM32L4P5CG-SmarTag2/Applications/FirmwareUpdate/readme.html">Read Me</a></td>
+</tr>
+</tbody>
+</table>
+<p><br />
+</p>
+<table>
+<caption>Drivers<br />
+</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">STM32L4xx CMSIS</td>
+<td style="text-align: left;">1.7.2</td>
+<td style="text-align: left;"><a href="Drivers\CMSIS\Device\ST\STM32L4xx\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STM32L4xx HAL</td>
+<td style="text-align: left;">1.13.2</td>
+<td style="text-align: left;"><a href="Drivers\STM32L4xx_HAL_Driver\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BSP STEVAL-SMARTAG2</td>
+<td style="text-align: left;">1.0.0</td>
+<td style="text-align: left;"><a href="Drivers\BSP\SmarTag2\Release_Notes.html">release notes</a></td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Components<br />
+</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">lps22df</td>
+<td style="text-align: left;">1.1.0</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\lps22df\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stts22h</td>
+<td style="text-align: left;">1.3.0</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\stts22h\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">lsm6dso32x</td>
+<td style="text-align: left;">1.1.0</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\lsm6dso32x\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">h3lis331dl</td>
+<td style="text-align: left;">1.2.0</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\h3lis331dl\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">vd6283tx</td>
+<td style="text-align: left;">1.0.1</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\vd6283tx\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">st25dvxxkc</td>
+<td style="text-align: left;">2.0.1</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\st25dvxxkc\Release_Notes.html">release notes</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="known-limitations-1">Known Limitations</h2>
+<ul>
+<li>None</li>
+</ul>
+<h2 id="known-issues-1">Known Issues</h2>
+<ul>
+<li>None</li>
+</ul>
+<h2 id="development-toolchains-and-compilers-1">Development Toolchains and Compilers</h2>
+<ul>
+<li>IAR Embedded Workbench for ARM (EWARM) toolchain V9.20.1 + STLink/V2</li>
+<li>RealView Microcontroller Development Kit (MDK-ARM) toolchain V5.37.0 + ST-LINK/V2</li>
+<li>Integrated Development Environment for STM32 (STM32CubeIDE) V1.10.1 + ST-LINK</li>
+</ul>
+<h2 id="supported-devices-and-boards-1">Supported Devices and Boards</h2>
+<ul>
+<li>STEVAL-SMARTAG2 NFC dynamic tag sensor and processing node evaluation board [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/st25-nfc-rfid-eval-tools/st25-nfc-rfid-eval-boards/steval-SMARTAG2.html">STEVAL-SMARTAG2</a>]</li>
+</ul>
+<h2 id="backward-compatibility-1">Backward Compatibility</h2>
+<p>None</p>
+<h2 id="dependencies-1">Dependencies</h2>
+<p>This software release is compatible with:</p>
+<ul>
+<li><a href="https://play.google.com/store/apps/details?id=com.st.assetTracking"><strong>ST Asset Tracking Android application</strong></a> V3.1.0 (or higher)</li>
+<li><a href="https://apps.apple.com/it/app/st-asset-tracking/id1483734401"><strong>ST Asset Tracking iOS application</strong></a> V3.1.0 (or higher)</li>
+<li><a href="https://play.google.com/store/apps/details?id=com.st.smartTag"><strong>ST NFC Sensor Android application</strong></a> V1.3.0 (or higher)</li>
+<li><a href="https://apps.apple.com/it/app/st-nfc-sensor/id1377274569"><strong>ST NFC Sensor iOS application</strong></a> V1.3.0 (or higher)</li>
+</ul>
+</div>
+</div>
+<div class="collapse">
+<input type="checkbox" id="collapse-section1" aria-hidden="true"> <label for="collapse-section1" aria-hidden="true">V1.0.0 / 02-September-2022</label>
+<div>
+<h2 id="main-changes-2">Main Changes</h2>
+<h3 id="maintenance-release-2">Maintenance release</h3>
+<ul>
+<li>First Official Release</li>
+</ul>
+<h2 id="contents-2">Contents</h2>
+<p>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</p>
+<table>
+<caption>Documentation<br />
+</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">FP-SNS-SMARTAG2_STEVAL-SMARTAG2 Doxygen documentation</td>
+<td style="text-align: left;">1.0.0</td>
+<td style="text-align: left;"><a href="Documentation\FP-SNS-SMARTAG2_STEVAL-SMARTAG2.chm">CHM</a></td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Projects</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">STM32L4P5CG-SmarTag2/Examples/SimpleBootLoader</td>
+<td style="text-align: left;">1.0.0</td>
+<td style="text-align: left;"><a href="Projects/STM32L4P5CG-SmarTag2/Examples/SimpleBootLoader/readme.txt">Read Me</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STM32L4P5CG-SmarTag2/Examples/SmarTag2</td>
+<td style="text-align: left;">1.0.0</td>
+<td style="text-align: left;"><a href="Projects/STM32L4P5CG-SmarTag2/Examples/SmarTag2/readme.txt">Read Me</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">STM32L4P5CG-SmarTag2/Applications/FirmwareUpdate</td>
+<td style="text-align: left;">1.0.0</td>
+<td style="text-align: left;"><a href="Projects/STM32L4P5CG-SmarTag2/Applications/FirmwareUpdate/readme.txt">Read Me</a></td>
+</tr>
+</tbody>
+</table>
+<p><br />
+</p>
+<table>
+<caption>Drivers<br />
+</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">STM32L4xx CMSIS</td>
+<td style="text-align: left;">1.7.2</td>
+<td style="text-align: left;"><a href="Drivers\CMSIS\Device\ST\STM32L4xx\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STM32L4xx HAL</td>
+<td style="text-align: left;">1.13.2</td>
+<td style="text-align: left;"><a href="Drivers\STM32L4xx_HAL_Driver\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BSP STEVAL-SMARTAG2</td>
+<td style="text-align: left;">1.0.0</td>
+<td style="text-align: left;"><a href="Drivers\BSP\SmarTag2\Release_Notes.html">release notes</a></td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Components<br />
+</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">lps22df</td>
+<td style="text-align: left;">1.1.0</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\lps22df\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stts22h</td>
+<td style="text-align: left;">1.3.0</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\stts22h\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">lsm6dso32x</td>
+<td style="text-align: left;">1.1.0</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\lsm6dso32x\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">h3lis331dl</td>
+<td style="text-align: left;">1.2.0</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\h3lis331dl\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">vd6283tx</td>
+<td style="text-align: left;">1.0.1</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\vd6283tx\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">st25dvxxkc</td>
+<td style="text-align: left;">2.0.1</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\st25dvxxkc\Release_Notes.html">release notes</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="known-limitations-2">Known Limitations</h2>
+<ul>
+<li>None</li>
+</ul>
+<h2 id="known-issues-2">Known Issues</h2>
+<ul>
+<li>None</li>
+</ul>
+<h2 id="development-toolchains-and-compilers-2">Development Toolchains and Compilers</h2>
+<ul>
+<li>IAR Embedded Workbench for ARM (EWARM) toolchain V9.20.1 + STLink/V2</li>
+<li>RealView Microcontroller Development Kit (MDK-ARM) toolchain V5.37.0 + ST-LINK/V2</li>
+<li>Integrated Development Environment for STM32 (STM32CubeIDE) V1.10.1 + ST-LINK</li>
+</ul>
+<h2 id="supported-devices-and-boards-2">Supported Devices and Boards</h2>
+<ul>
+<li>STEVAL-SMARTAG2 NFC dynamic tag sensor and processing node evaluation board [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/st25-nfc-rfid-eval-tools/st25-nfc-rfid-eval-boards/steval-SMARTAG2.html">STEVAL-SMARTAG2</a>]</li>
+</ul>
+<h2 id="backward-compatibility-2">Backward Compatibility</h2>
+<p>None</p>
+<h2 id="dependencies-2">Dependencies</h2>
+<p>This software release is compatible with:</p>
+<ul>
+<li><a href="https://play.google.com/store/apps/details?id=com.st.assetTracking"><strong>ST Asset Tracking Android application</strong></a> V3.1.0 (or higher)</li>
+<li><a href="https://apps.apple.com/it/app/st-asset-tracking/id1483734401"><strong>ST Asset Tracking iOS application</strong></a> V3.1.0 (or higher)</li>
+<li><a href="https://play.google.com/store/apps/details?id=com.st.smartTag"><strong>ST NFC Sensor Android application</strong></a> V1.3.0 (or higher)</li>
+<li><a href="https://apps.apple.com/it/app/st-nfc-sensor/id1377274569"><strong>ST NFC Sensor iOS application</strong></a> V1.3.0 (or higher)</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<footer class="sticky">
+<p>For complete documentation on <strong>FP-SNS-SMARTAG2</strong> , visit: <a href="https://www.st.com/content/st_com/en/products/embedded-software/mcu-mpu-embedded-software/stm32-embedded-software/stm32-ode-function-pack-sw/fp-sns-smartag2.html">www.st.com</a></p>
+This release note uses up to date web standards and, for this reason, should not be opened with Internet Explorer but preferably with popular browsers such as Google Chrome, Mozilla Firefox, Opera or Microsoft Edge.
+</footer>
+</body>
+</html>
