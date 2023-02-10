@@ -16,10 +16,6 @@ The FP-SNS-SMARTAG2 contains the following projects:
 
 The package supports battery operated use cases.
 
-In this FW Package, the module listed below is not directly accessible as it is subject to some restrictive license terms requiring user's approval via a "click thu" procedure. It has to be downloaded from the www.st.com website. The respective URL to download this module is available in a readme.txt file at the root of the respective folder.
-
-- Drivers/BSP/Components/st25dvxxkc
-
 
 **FP-SNS-SMARTAG2 software features**:
 
