@@ -32,11 +32,21 @@ static MOTION_SENSOR_FuncDrv_t *MotionFuncDrv[MOTION_INSTANCES_NBR][MOTION_FUNCT
 static MOTION_SENSOR_CommonDrv_t *MotionDrv[MOTION_INSTANCES_NBR];
 static MOTION_SENSOR_Ctx_t MotionCtx[MOTION_INSTANCES_NBR];
 
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+static int32_t LIS2DUXS12_0_Probe(uint32_t Functions);
+#endif
 #if (USE_MOTION_SENSOR_H3LIS331DL_0 == 1)
 static int32_t H3LIS331DL_0_Probe(uint32_t Functions);
 #endif
 #if (USE_MOTION_SENSOR_LSM6DSO32X_0 == 1)
 static int32_t LSM6DSO32X_0_Probe(uint32_t Functions);
+#endif
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+static int32_t BSP_LIS2DUXS12_0_Init(void);
+static int32_t BSP_LIS2DUXS12_0_DeInit(void);
+static int32_t BSP_LIS2DUXS12_0_WriteReg(uint16_t Addr, uint16_t Reg, uint8_t *pdata, uint16_t len);
+static int32_t BSP_LIS2DUXS12_0_ReadReg(uint16_t Addr, uint16_t Reg, uint8_t *pdata, uint16_t len);
 #endif
 
 #if (USE_MOTION_SENSOR_H3LIS331DL_0 == 1)
@@ -72,6 +82,22 @@ int32_t BSP_MOTION_SENSOR_Init(uint32_t Instance, uint32_t Functions)
 
   switch (Instance)
   {
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      if (LIS2DUXS12_0_Probe(Functions) != BSP_ERROR_NONE)
+      {
+        return BSP_ERROR_NO_INIT;
+      }
+      if (MotionDrv[Instance]->GetCapabilities(MotionCompObj[Instance], (void *)&cap) != BSP_ERROR_NONE)
+      {
+        return BSP_ERROR_UNKNOWN_COMPONENT;
+      }
+      if (cap.Acc == 1U)
+      {
+        component_functions |= MOTION_ACCELERO;
+      }
+      break;
+#endif
 #if (USE_MOTION_SENSOR_H3LIS331DL_0 == 1)
     case H3LIS331DL_0:
       if (H3LIS331DL_0_Probe(Functions) != BSP_ERROR_NONE)
@@ -568,6 +594,186 @@ int32_t BSP_MOTION_SENSOR_SetFullScale(uint32_t Instance, uint32_t Function, int
 
   return ret;
 }
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0  == 1)
+/**
+ * @brief  Register Bus IOs for LIS2DUXS12 instance
+ * @param  Functions Motion sensor functions. Could be :
+ *         - MOTION_GYRO and/or MOTION_ACCELERO
+ * @retval BSP status
+ */
+static int32_t LIS2DUXS12_0_Probe(uint32_t Functions)
+{
+  LIS2DUXS12_IO_t            io_ctx;
+  uint8_t                  id;
+  static LIS2DUXS12_Object_t lis2du12_obj_0;
+  LIS2DUXS12_Capabilities_t  cap;
+  int32_t                  ret = BSP_ERROR_NONE;
+
+  /* Configure the driver */
+  io_ctx.BusType     = LIS2DUXS12_SPI_4WIRES_BUS; /* SPI 4-Wires */
+  io_ctx.Address     = 0x0;
+  io_ctx.Init        = BSP_LIS2DUXS12_0_Init;
+  io_ctx.DeInit      = BSP_LIS2DUXS12_0_DeInit;
+  io_ctx.ReadReg     = BSP_LIS2DUXS12_0_ReadReg;
+  io_ctx.WriteReg    = BSP_LIS2DUXS12_0_WriteReg;
+  io_ctx.GetTick     = BSP_GetTick;
+
+  if (LIS2DUXS12_RegisterBusIO(&lis2du12_obj_0, &io_ctx) != LIS2DUXS12_OK)
+  {
+    ret = BSP_ERROR_UNKNOWN_COMPONENT;
+  } else {        
+    if(lis2duxs12_exit_deep_power_down(&(lis2du12_obj_0.Ctx)) != LIS2DUXS12_OK)
+    {
+      ret = BSP_ERROR_UNKNOWN_COMPONENT;
+    } else {
+      //Wait time to boot
+      HAL_Delay(30);
+     if (LIS2DUXS12_ReadID(&lis2du12_obj_0, &id) != LIS2DUXS12_OK)
+      {
+        ret = BSP_ERROR_UNKNOWN_COMPONENT;
+      }
+      else if (id != LIS2DUXS12_ID)
+      {
+        ret = BSP_ERROR_UNKNOWN_COMPONENT;
+      }
+      else
+      {
+        (void)LIS2DUXS12_GetCapabilities(&lis2du12_obj_0, &cap);
+        MotionCtx[LIS2DUXS12_0].Functions = ((uint32_t)cap.Gyro) | ((uint32_t)cap.Acc << 1) | ((uint32_t)cap.Magneto << 2);
+
+        MotionCompObj[LIS2DUXS12_0] = &lis2du12_obj_0;
+        /* The second cast (void *) is added to bypass Misra R11.3 rule */
+        MotionDrv[LIS2DUXS12_0] = (MOTION_SENSOR_CommonDrv_t *)(void *)&LIS2DUXS12_COMMON_Driver;
+
+        if ((ret == BSP_ERROR_NONE) && ((Functions & MOTION_ACCELERO) == MOTION_ACCELERO) && (cap.Acc == 1U))
+        {
+          /* The second cast (void *) is added to bypass Misra R11.3 rule */
+          MotionFuncDrv[LIS2DUXS12_0][FunctionIndex[MOTION_ACCELERO]] = (MOTION_SENSOR_FuncDrv_t *)(void *)&LIS2DUXS12_ACC_Driver;
+
+          if (MotionDrv[LIS2DUXS12_0]->Init(MotionCompObj[LIS2DUXS12_0]) != LIS2DUXS12_OK)
+          {
+            ret = BSP_ERROR_COMPONENT_FAILURE;
+          }
+          else
+          {
+            ret = BSP_ERROR_NONE;
+          }
+        }
+        if ((ret == BSP_ERROR_NONE) && ((Functions & MOTION_GYRO) == MOTION_GYRO))
+        {
+          /* Return an error if the application try to initialize a function not supported by the component */
+          ret = BSP_ERROR_COMPONENT_FAILURE;
+        }
+        if ((ret == BSP_ERROR_NONE) && ((Functions & MOTION_MAGNETO) == MOTION_MAGNETO))
+        {
+          /* Return an error if the application try to initialize a function not supported by the component */
+          ret = BSP_ERROR_COMPONENT_FAILURE;
+        }
+      }
+    }
+  }
+  return ret;
+}
+
+/**
+ * @brief  Initialize SPI bus for LIS2DUXS12
+ * @retval BSP status
+ */
+static int32_t BSP_LIS2DUXS12_0_Init(void)
+{
+  int32_t ret = BSP_ERROR_UNKNOWN_FAILURE;
+
+  if(BSP_LIS2DUXS12_0_SPI_Init() == BSP_ERROR_NONE)
+  {
+    ret = BSP_ERROR_NONE;
+  }
+
+  return ret;
+}
+
+/**
+ * @brief  DeInitialize SPI bus for LIS2DUXS12
+ * @retval BSP status
+ */
+static int32_t BSP_LIS2DUXS12_0_DeInit(void)
+{
+  int32_t ret = BSP_ERROR_UNKNOWN_FAILURE;
+
+  if(BSP_LIS2DUXS12_0_SPI_DeInit() == BSP_ERROR_NONE)
+  {
+    ret = BSP_ERROR_NONE;
+  }
+
+  return ret;
+}
+
+/**
+ * @brief  Write register by SPI bus for LIS2DUXS12
+ * @param  Addr not used, it is only for BSP compatibility
+ * @param  Reg the starting register address to be written
+ * @param  pdata the pointer to the data to be written
+ * @param  len the length of the data to be written
+ * @retval BSP status
+ */
+static int32_t BSP_LIS2DUXS12_0_WriteReg(uint16_t Addr, uint16_t Reg, uint8_t *pdata, uint16_t len)
+{
+  int32_t ret = BSP_ERROR_NONE;
+  uint8_t dataReg = (uint8_t)Reg;
+
+  /* CS Enable */
+  HAL_GPIO_WritePin(BSP_LIS2DUXS12_0_CS_PORT, BSP_LIS2DUXS12_0_CS_PIN, GPIO_PIN_RESET);
+
+  if (BSP_LIS2DUXS12_0_SPI_Send(&dataReg, 1) != BSP_ERROR_NONE)
+  {
+    ret = BSP_ERROR_UNKNOWN_FAILURE;
+  }
+
+  if (BSP_LIS2DUXS12_0_SPI_Send(pdata, len) != BSP_ERROR_NONE)
+  {
+    ret = BSP_ERROR_UNKNOWN_FAILURE;
+  }
+
+  /* CS Disable */
+  HAL_GPIO_WritePin(BSP_LIS2DUXS12_0_CS_PORT, BSP_LIS2DUXS12_0_CS_PIN, GPIO_PIN_SET);
+
+  return ret;
+}
+
+/**
+ * @brief  Read register by SPI bus for LIS2DUXS12
+ * @param  Addr not used, it is only for BSP compatibility
+ * @param  Reg the starting register address to be read
+ * @param  pdata the pointer to the data to be read
+ * @param  len the length of the data to be read
+ * @retval BSP status
+ */
+static int32_t BSP_LIS2DUXS12_0_ReadReg(uint16_t Addr, uint16_t Reg, uint8_t *pdata, uint16_t len)
+{
+  int32_t ret = BSP_ERROR_NONE;
+  uint8_t dataReg = (uint8_t)Reg;
+
+  dataReg |= 0x80U;
+
+  /* CS Enable */
+  HAL_GPIO_WritePin(BSP_LIS2DUXS12_0_CS_PORT, BSP_LIS2DUXS12_0_CS_PIN, GPIO_PIN_RESET);
+
+  if (BSP_LIS2DUXS12_0_SPI_Send(&dataReg, 1) != BSP_ERROR_NONE)
+  {
+    ret = BSP_ERROR_UNKNOWN_FAILURE;
+  }
+
+  if (BSP_LIS2DUXS12_0_SPI_Recv(pdata, len) != BSP_ERROR_NONE)
+  {
+    ret = BSP_ERROR_UNKNOWN_FAILURE;
+  }
+
+  /* CS Disable */
+  HAL_GPIO_WritePin(BSP_LIS2DUXS12_0_CS_PORT, BSP_LIS2DUXS12_0_CS_PIN, GPIO_PIN_SET);
+
+  return ret;
+}
+#endif
 
 #if (USE_MOTION_SENSOR_H3LIS331DL_0  == 1)
 /**

@@ -158,6 +158,18 @@
 #define HIGH_G_CS_GPIO_Port             BSP_H3LIS331DL_0_CS_PORT  
 #define HIGH_G_CS_Pin                   BSP_H3LIS331DL_0_CS_PIN
 
+/* LIS2DUXS12 acc Sensor */
+#define BSP_LIS2DUXS12_0_SPI_Init         BSP_SPI1_Init
+#define BSP_LIS2DUXS12_0_SPI_DeInit       BSP_SPI1_DeInit
+#define BSP_LIS2DUXS12_0_SPI_Send         BSP_SPI1_Send
+#define BSP_LIS2DUXS12_0_SPI_Recv         BSP_SPI1_Recv
+
+#define BSP_LIS2DUXS12_0_CS_PORT          GPIOA
+#define BSP_LIS2DUXS12_0_CS_PIN           GPIO_PIN_15
+
+#define ACC_CS_GPIO_Port                BSP_LIS2DUXS12_0_CS_PORT
+#define ACC_CS_Pin                      BSP_LIS2DUXS12_0_CS_PIN
+
 /* lsm6dso32x acc and gyro Sensor */
 #define BSP_LSM6DSO32X_0_SPI_Init       BSP_SPI1_Init
 #define BSP_LSM6DSO32X_0_SPI_DeInit     BSP_SPI1_DeInit

@@ -191,6 +191,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/STSmartNFC/Src/TagType5.c</locationURI>
 		</link>
 		<link>
+			<name>Drivers/BSP/Components/lis2duxs12</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>Drivers/BSP/SMARTAG2/SmarTag2.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/Drivers/BSP/SmarTag2/SmarTag2.c</locationURI>
@@ -234,6 +239,16 @@
 			<name>Drivers/BSP/SMARTAG2/Smartag2_light_sensor.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/Drivers/BSP/SmarTag2/Smartag2_light_sensor.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/BSP/Components/lis2duxs12/lis2duxs12.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/Drivers/BSP/Components/lis2duxs12/lis2duxs12.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/BSP/Components/lis2duxs12/lis2duxs12_reg.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/Drivers/BSP/Components/lis2duxs12/lis2duxs12_reg.c</locationURI>
 		</link>
 		<link>
 			<name>Drivers/BSP/Components/lsm6dso32x/lsm6dso32x.c</name>

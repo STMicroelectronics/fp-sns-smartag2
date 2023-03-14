@@ -3,8 +3,8 @@
   ******************************************************************************
   * @file    main.h
   * @author  System Research & Applications Team - Catania & Agrate Lab.
-  * @version 1.0.2
-  * @date    30-January-2023
+  * @version 1.1.0
+  * @date    22-February-2023
   * @brief   Header for main.c file.
   *          This file contains the common defines of the application.
   ******************************************************************************
@@ -38,8 +38,11 @@ extern "C" {
 
 /* Exported Variables --------------------------------------------------------*/
 extern RTC_HandleTypeDef hrtc;
+extern uint8_t AccInit_LIS2DUXS12_Done;
+extern uint8_t AccInit_LSM6DSO32X_Done;
 
 /* Exported functions prototypes ---------------------------------------------*/
+extern void HWInitializationStep2(void);
 
 /* Private defines -----------------------------------------------------------*/
 #define INT_PRE_Pin GPIO_PIN_13

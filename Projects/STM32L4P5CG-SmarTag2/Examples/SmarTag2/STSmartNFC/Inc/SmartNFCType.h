@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    SmartNFCType.h
   * @author  System Research & Applications Team - Catania & Agrate Lab.
-  * @version 1.0.2
-  * @date    30-January-2023
+  * @version 1.1.0
+  * @date    22-February-2023
   * @brief   Common Types used
   ******************************************************************************
   * @attention

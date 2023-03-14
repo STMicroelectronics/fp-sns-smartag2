@@ -6,6 +6,8 @@ The FP-SNS-SMARTAG2 contains the following projects:
 
 - Example:
 
+  - OneShot: reads in energy harvesting mode the ambient light and environmental sensor data on your IoT node by the means of an NFC enabled reader, such as a mobile phone or tablet, throught a suitable AndroidST or iOST application such as the ST NFC Sensor.
+
   - SimpleBootLoader: apply the firmware updated replacing the current running firmware with the new version received via NFC or runs the current firmware if the new version is not available.
 
   - SmarTag2: reads the ambient light, motion and environmental sensor data on your IoT node by the means of an NFC enabled reader, such as a mobile phone or tablet, throught a suitable AndroidST or iOST application such as the ST Asset Tracking (Version 3.1.0 or higher) and ST NFC Sensor (Version 1.3.0 or higher). .
@@ -50,6 +52,10 @@ Here is the list of references to user documents:
 
 - STEVAL-SMARTAG2 NFC Dynamic Tag sensor node evaluation board \[[STEVAL-SMARTAG2]()\]
 
+## Known Limitations
+
+- OneShot example can be used only for the version B of the evaluation board (STEVAL$SMARTAG2B)
+
 ## Development Toolchains and Compilers
 
 -   IAR Embedded Workbench for ARM (EWARM) toolchain V9.20.1 + STLink/V2
@@ -62,5 +68,5 @@ This software release is compatible with:
 
 - [**ST Asset Tracking Android application**](https://play.google.com/store/apps/details?id=com.st.assetTracking)  V3.3.0 (or higher)
 - [**ST Asset Tracking iOS application**](https://apps.apple.com/it/app/st-asset-tracking/id1483734401)  V3.3.0 (or higher)
-- [**ST NFC Sensor Android application**](https://play.google.com/store/apps/details?id=com.st.smartTag)  V2.0.1 (or higher)
-- [**ST NFC Sensor iOS application**](https://apps.apple.com/it/app/st-nfc-sensor/id1377274569)  V2.0.1 (or higher)
+- [**ST NFC Sensor Android application**](https://play.google.com/store/apps/details?id=com.st.smartTag)  V2.1.0 (or higher)
+- [**ST NFC Sensor iOS application**](https://apps.apple.com/it/app/st-nfc-sensor/id1377274569)  V2.1.0 (or higher)

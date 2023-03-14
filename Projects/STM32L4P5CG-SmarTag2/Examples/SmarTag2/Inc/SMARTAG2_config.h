@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    SMARTAG2_config.h
   * @author  System Research & Applications Team - Catania & Agrate Lab.
-  * @version 1.0.2
-  * @date    30-January-2023
+  * @version 1.1.0
+  * @date    22-February-2023
   * @brief   Configuration file for SmarTag application
   ******************************************************************************
   * @attention
@@ -31,6 +31,10 @@
 
 /* Uncomment the following define for enabling the VCOM printf */
 #define SMARTAG2_ENABLE_PRINTF
+   
+/* Uncomment the following define for avoiding
+ * to save again one sample == to the lastest saved */
+//#define SMARTAG2_DONT_SAVE_EQUAL_SAMPLES
 
 /* AutoStart after 2 Seconds */
 #define SMARTAG2_AUTOSTART_SECONDS 2
@@ -42,7 +46,6 @@
   //Uncomment the following defines for increasing the verbosity level
   //#define  SMARTAG2_VERBOSE_PRINTF
 #endif /* SMARTAG2_ENABLE_PRINTF */
-
 
 
 /* Default Epoch Start time if there is not a Valid Configuration:
@@ -78,8 +81,8 @@
 
 /* Package Version only numbers 0->9 */
 #define SMARTAG2_VERSION_MAJOR  1
-#define SMARTAG2_VERSION_MINOR  0
-#define SMARTAG2_VERSION_PATCH  2
+#define SMARTAG2_VERSION_MINOR  1
+#define SMARTAG2_VERSION_PATCH  0
 
 /* NFC Protocol Version and Revision */
 #define SMARTAG2_RECORD_VERSION 2
@@ -87,7 +90,7 @@
 
 /* Board Id and Firmware Id */
 #define SMARTAG2_BOARD_ID 1
-#define SMARTAG2_FIRMWARE_ID 3
+#define SMARTAG2_FIRMWARE_ID 4
 
 /* NFC field */
 #define FIELD_UNDEF   0
@@ -100,7 +103,7 @@
 #define ASYNC_EVENT 0x02
    
 /* Virtual Sensor Configuration */
-#define SMARTAG2_VIRTUAL_SENSORS_NUM 7
+#define SMARTAG2_VIRTUAL_SENSORS_NUM 10
 #define STTS22H_VS_ID         0
 #define LPS22DF_VS_ID         1
 #define VD6283_LUX_VS_ID      2
@@ -108,6 +111,9 @@
 #define LSM6DSOX32_VS_ID      4
 #define LSM6DSOX32_6D_VS_ID   5
 #define LSM6DSOX32_MLC_VS_ID  6
+#define LIS2DUXS12_MLC_VS_ID  7
+#define LIS2DUXS12_VS_ID      8
+#define LIS2DUXS12_6D_VS_ID   9
 
 
 /* Accelerometer 6D orientation */
@@ -118,6 +124,12 @@
 #define ORIENTATION_BOTTOM 0x04
 #define ORIENTATION_UP     0x05
 #define ORIENTATION_DOWN   0x06
+
+//Asset Tracking LIS2DUXS12 MLC output */
+#define AT_STATIONARY_UPRIGHT     0x00
+#define AT_STATIONARY_NOT_UPRIGHT 0x04
+#define AT_IN_MOTION              0x08
+#define AT_SHAKEN                 0x0C
    
 #ifdef SMARTAG2_ENABLE_PRINTF
   #include <stdio.h>

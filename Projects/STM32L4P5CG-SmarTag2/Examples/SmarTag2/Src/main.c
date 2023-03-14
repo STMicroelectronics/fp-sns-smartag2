@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    main.c
   * @author  System Research & Applications Team - Catania & Agrate Lab.
-  * @version 1.0.2
-  * @date    30-January-2023
+  * @version 1.1.0
+  * @date    22-February-2023
   * @brief   Main program body
   ******************************************************************************
   * @attention
@@ -26,6 +26,8 @@
 
 /* Exported Variables --------------------------------------------------------*/
 RTC_HandleTypeDef hrtc;
+uint8_t AccInit_LIS2DUXS12_Done=0;
+uint8_t AccInit_LSM6DSO32X_Done=0;
 
 /* Private typedef -----------------------------------------------------------*/
 
@@ -46,7 +48,7 @@ static uint32_t WakeUpTimerIsSet =0;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_RTC_Init(void);
-static void HWInitialization(void);
+static void HWInitializationStep1(void);
 static void WakeUpTimerCallBack(void);
 static void FactoryReset(void);
 
@@ -66,15 +68,13 @@ int main(void)
   SystemClock_Config();
   
   /* Initializes the Plaftorm */
-  HWInitialization();
-  
-  /* SmarTag Application Start */
-  SmarTagAppStart();
+  HWInitializationStep1();
   
 #ifndef SMARTAG2_ENABLE_DEBUG  
    /* Enable Power Control clock */
   __HAL_RCC_PWR_CLK_ENABLE();
   HAL_PWREx_EnableLowPowerRunMode();
+ 
   /* Enable the fast wake up from Ultra low power mode */
   HAL_PWREx_EnableInternalWakeUpLine();
   /* Select MSI as system clock source after Wake Up from Stop mode */
@@ -453,14 +453,13 @@ static void MX_GPIO_Init(void)
 
 /**
   * @brief  Initializes the Hardware Configuration
+  *         Step1: RTC/UART Init and Power Off Inertial Sensors
   * @param  None
   * @retval None
   */
-static void HWInitialization(void)
+static void HWInitializationStep1(void)
 {
-  
   /* Initialize all configured peripherals */
-  MX_GPIO_Init();
   MX_RTC_Init();
   
 #ifdef SMARTAG2_ENABLE_PRINTF
@@ -495,11 +494,35 @@ static void HWInitialization(void)
          __DATE__,__TIME__);
  #endif /* SMARTAG2_ENABLE_PRINTF */ 
   
+   BSP_SmarTag2_ACC_PowerOff();
+   HAL_NVIC_DisableIRQ(EXTI0_IRQn);
+   MemsInterrupt=0;
+   AccInit_LIS2DUXS12_Done= 0;
+   AccInit_LSM6DSO32X_Done= 0;
+}
+
+/**
+  * @brief  Initializes the Hardware Configuration
+  *         Steps: Initializes Hw not Initialized on Step1
+  * @param  None
+  * @retval None
+  */
+void HWInitializationStep2(void)
+{
+  
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  
   /* Initialize LED */
   BSP_LED_Init();
   BSP_PB_Init(BUTTON_USER, BUTTON_MODE_EXTI);
   BSP_GPO_Init();
+  
+  /* SmarTag Application Start */
+  SmarTagAppStart();
 }
+
+
 
 /**
   * @brief  Callback Function for Wake Up Timer

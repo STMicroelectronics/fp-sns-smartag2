@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    SmarTag2_conf.h
   * @author  System Research & Applications Team - Catania & Agrate Lab.
-  * @version 1.0.2
-  * @date    30-January-2023
+  * @version 1.1.0
+  * @date    22-February-2023
   * @brief   This file contains definitions of the MEMS components bus
   *          interfaces for SmarTag2 board
   ******************************************************************************
@@ -40,8 +40,10 @@ extern "C" {
 #define USE_ENV_SENSOR_STTS22H_0        1U
 #define USE_ENV_SENSOR_LPS22DF_0        1U
 
+#define USE_MOTION_SENSOR_LIS2DUXS12_0  1U
 #define USE_MOTION_SENSOR_H3LIS331DL_0  0U
 #define USE_MOTION_SENSOR_LSM6DSO32X_0  1U
+  
   
 #define LIGHT_SENSOR_INSTANCES_NBR      1U
 

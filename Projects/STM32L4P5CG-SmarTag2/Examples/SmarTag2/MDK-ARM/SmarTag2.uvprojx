@@ -340,7 +340,7 @@
               <MiscControls>-Wno-format -Wno-enum-conversion</MiscControls>
               <Define>USE_HAL_DRIVER,STM32L4P5xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;../../../../../Drivers/STM32L4xx_HAL_Driver/Inc;../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy;../../../../../Drivers/CMSIS/Device/ST/STM32L4xx/Include;../../../../../Drivers/CMSIS/Include;../../../../../Drivers/BSP/SmarTag2;../../../../../Drivers/BSP/Components/lps22df;../../../../../Drivers/BSP/Components/lsm6dso32x;../../../../../Drivers/BSP/Components/st25dvxxkc;../../../../../Drivers/BSP/Components/stts22h;../../../../../Drivers/BSP/Components/vd6283tx/modules;../../../../../Drivers/BSP/Components/vd6283tx/porting;../../../../../Drivers/BSP/Components/vd6283tx;../../../../../Drivers/BSP/Components/Common;../STSmartNFC/Inc</IncludePath>
+              <IncludePath>../Inc;../../../../../Drivers/STM32L4xx_HAL_Driver/Inc;../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy;../../../../../Drivers/CMSIS/Device/ST/STM32L4xx/Include;../../../../../Drivers/CMSIS/Include;../../../../../Drivers/BSP/SmarTag2;../../../../../Drivers/BSP/Components/st25dvxxkc;../../../../../Drivers/BSP/Components/lsm6dso32x;..\..\..\..\..\Drivers\BSP\Components\lis2duxs12;../../../../../Drivers/BSP/Components/lps22df;../../../../../Drivers/BSP/Components/stts22h;../../../../../Drivers/BSP/Components/vd6283tx/modules;../../../../../Drivers/BSP/Components/vd6283tx/porting;../../../../../Drivers/BSP/Components/vd6283tx;../../../../../Drivers/BSP/Components/Common;../STSmartNFC/Inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -432,6 +432,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Drivers/BSP/Components/st25dvxxkc</GroupName>
+          <Files>
+            <File>
+              <FileName>st25dvxxkc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../Drivers/BSP/Components/st25dvxxkc/st25dvxxkc.c</FilePath>
+            </File>
+            <File>
+              <FileName>st25dvxxkc_reg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../Drivers/BSP/Components/st25dvxxkc/st25dvxxkc_reg.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Drivers/BSP/Components/lsm6dso32x</GroupName>
           <Files>
             <File>
@@ -447,6 +462,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Drivers/BSP/Components/lis2duxs12</GroupName>
+          <Files>
+            <File>
+              <FileName>lis2duxs12.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\Drivers\BSP\Components\lis2duxs12\lis2duxs12.c</FilePath>
+            </File>
+            <File>
+              <FileName>lis2duxs12_reg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\Drivers\BSP\Components\lis2duxs12\lis2duxs12_reg.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Drivers/BSP/Components/lsp22df</GroupName>
           <Files>
             <File>
@@ -458,21 +488,6 @@
               <FileName>lps22df_reg.c</FileName>
               <FileType>1</FileType>
               <FilePath>../../../../../Drivers/BSP/Components/lps22df/lps22df_reg.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Drivers/BSP/Components/st25dvxxkc</GroupName>
-          <Files>
-            <File>
-              <FileName>st25dvxxkc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../../../../../Drivers/BSP/Components/st25dvxxkc/st25dvxxkc.c</FilePath>
-            </File>
-            <File>
-              <FileName>st25dvxxkc_reg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../../../../../Drivers/BSP/Components/st25dvxxkc/st25dvxxkc_reg.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -720,5 +735,14 @@
     </components>
     <files/>
   </RTE>
+
+  <LayerInfo>
+    <Layers>
+      <Layer>
+        <LayName>SmarTag2</LayName>
+        <LayPrjMark>1</LayPrjMark>
+      </Layer>
+    </Layers>
+  </LayerInfo>
 
 </Project>

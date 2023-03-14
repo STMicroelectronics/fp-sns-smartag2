@@ -645,6 +645,7 @@ static void USART1_MspDeInit(UART_HandleTypeDef* uartHandle)
 void BSP_SmarTag2_ACC_PowerOff(void)
 {
     HAL_GPIO_DeInit(IMU_CS_GPIO_Port, IMU_CS_Pin);
+    HAL_GPIO_DeInit(ACC_CS_GPIO_Port, ACC_CS_Pin);
     HAL_GPIO_DeInit(HIGH_G_CS_GPIO_Port, HIGH_G_CS_Pin);
     HAL_SPI_DeInit(&hspi1);
     HAL_GPIO_WritePin(VDD_ACC_MCU_GPIO_Port, VDD_ACC_MCU_Pin, GPIO_PIN_RESET);
@@ -661,9 +662,11 @@ void BSP_SmarTag2_ACC_PowerOn(void)
     GPIO_InitTypeDef GPIO_InitStruct = { 0 };
 
     HAL_GPIO_DeInit(IMU_CS_GPIO_Port, IMU_CS_Pin);
+    HAL_GPIO_DeInit(ACC_CS_GPIO_Port, ACC_CS_Pin);
     HAL_GPIO_DeInit(HIGH_G_CS_GPIO_Port, HIGH_G_CS_Pin);
 
     HAL_GPIO_WritePin(IMU_CS_GPIO_Port, IMU_CS_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(ACC_CS_GPIO_Port, ACC_CS_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(HIGH_G_CS_GPIO_Port, HIGH_G_CS_Pin, GPIO_PIN_SET);
 
     HAL_GPIO_WritePin(VDD_ACC_MCU_GPIO_Port, VDD_ACC_MCU_Pin, GPIO_PIN_SET);
@@ -673,6 +676,12 @@ void BSP_SmarTag2_ACC_PowerOn(void)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(IMU_CS_GPIO_Port, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = ACC_CS_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(ACC_CS_GPIO_Port, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = HIGH_G_CS_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;

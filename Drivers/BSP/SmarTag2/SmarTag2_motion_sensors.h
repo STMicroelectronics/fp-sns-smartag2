@@ -31,9 +31,13 @@ extern "C" {
 
 #include "SmarTag2_conf.h"
 #include "motion_sensor.h"
-  
-#ifndef USE_MOTION_SENSOR_H3LIS331DL_0
-#define USE_MOTION_SENSOR_H3LIS331DL_0         1
+
+#ifndef USE_MOTION_SENSOR_LIS2DUXS12_0
+#define USE_MOTION_SENSOR_LIS2DUXS12_0         1
+#endif
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+#include "lis2duxs12.h"
 #endif
 
 #if (USE_MOTION_SENSOR_H3LIS331DL_0 == 1)
@@ -44,12 +48,16 @@ extern "C" {
 #include "lsm6dso32x.h"
 #endif
 
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+#define LIS2DUXS12_0 (0)
+#endif
+
 #if (USE_MOTION_SENSOR_H3LIS331DL_0 == 1)
-#define H3LIS331DL_0 (0)
+#define H3LIS331DL_0 (USE_MOTION_SENSOR_LIS2DUXS12_0)
 #endif
 
 #if (USE_MOTION_SENSOR_LSM6DSO32X_0 == 1)
-#define LSM6DSO32X_0 (USE_MOTION_SENSOR_H3LIS331DL_0)
+#define LSM6DSO32X_0 (USE_MOTION_SENSOR_LIS2DUXS12_0 + USE_MOTION_SENSOR_H3LIS331DL_0)
 #endif
 
 typedef struct
@@ -97,7 +105,7 @@ typedef struct
 #endif
 
 #define MOTION_FUNCTIONS_NBR    3U
-#define MOTION_INSTANCES_NBR    (USE_MOTION_SENSOR_H3LIS331DL_0 + USE_MOTION_SENSOR_LSM6DSO32X_0)
+#define MOTION_INSTANCES_NBR    (USE_MOTION_SENSOR_LIS2DUXS12_0 + USE_MOTION_SENSOR_H3LIS331DL_0 + USE_MOTION_SENSOR_LSM6DSO32X_0)
 
 #if (MOTION_INSTANCES_NBR == 0)
 #error "No motion sensor instance has been selected"

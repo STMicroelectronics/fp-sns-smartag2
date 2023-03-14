@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    AppSmarTag.c
   * @author  System Research & Applications Team - Catania & Agrate Lab.
-  * @version 1.0.2
-  * @date    30-January-2023
+  * @version 1.1.0
+  * @date    22-February-2023
   * @brief   Application Process
   ******************************************************************************
   * @attention
@@ -35,6 +35,7 @@
 #include "SmartNFC.h"
 #include "TagType5.h"
 #include "lsm6dso32x_tilt_angle_mode0.h"
+#include "lis2duxs12_asset_tracking_lp.h"
 /* Private Defines -----------------------------------------------------------*/
 
 #define STTS22H_SAMPLE_TO_CODED(Value)        ((uint16_t)(((Value)*5) - ((-10)*5)))
@@ -76,6 +77,13 @@ typedef enum
   NFC_STATUS_OFF = 0,
   NFC_STATUS_ON
 } FNCStatusEnum_t;
+
+/* Imported variables --------------------------------------------------------*/
+/* Context of LSM6DSOX32 */
+extern void *MotionCompObj[];
+#define LSM6DSOX32_Contex (&(((LSM6DSO32X_Object_t *)MotionCompObj[LSM6DSO32X_0])->Ctx))
+/* Context of LIS2DUXS12 */
+#define LIS2DUXS12_Contex (&(((LIS2DUXS12_Object_t *)MotionCompObj[LIS2DUXS12_0])->Ctx))
 
 /* Private variables ---------------------------------------------------------*/
 static volatile FNCStatusEnum_t NFCStatus = NFC_STATUS_OFF;
@@ -227,6 +235,9 @@ void SmarTagAppWakeUpTimerCallBack(void)
   if((FirstTime==1) & (LogMode == SMARTAG2_LOGMODE_INACTIVE)) {
     
     if(NumWakeUps==SMARTAG2_AUTOSTART_SECONDS) {
+      
+      HWInitializationStep2();
+      
       FirstTime =0;
       NumWakeUps = 0;
       SMARTAG2_PRINTF("AutoStart\r\n\r\n");
@@ -240,7 +251,8 @@ void SmarTagAppWakeUpTimerCallBack(void)
       /* Power On/Off the Intertial sensors */
       if((AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Enable) |
          (AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].Enable) |
-         (AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].Enable)) {
+         (AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].Enable) |
+         (AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].Enable)) {
          BSP_SmarTag2_ACC_PowerOn();
          SMARTAG2_PRINTF("VDD ACC On\r\n");
        } else {
@@ -309,7 +321,7 @@ void SmarTagAppProcess(void)
 #endif /* SMARTAG2_VERBOSE_PRINTF */
              
              DataBuf32 = LSM6DSOX32_VS_ID |
-               (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_VS_ID].SampleDeltaDateTime)<<3);
+               (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_VS_ID].SampleDeltaDateTime)<<4);
              if(BSP_NFCTAG_WriteData( BSP_NFCTAG_INSTANCE, (uint8_t *)&DataBuf32, LogDefinition.LastSamplePointer, 4)!=NFCTAG_OK){
                STNFC_Error_Handler(STNFC_WRITING_ERROR);
              }
@@ -321,11 +333,11 @@ void SmarTagAppProcess(void)
              }
              LogDefinition.LastSamplePointer+=4;
              
-             /* Update Sample Counter and Last Sample Pointer */
-             UpdateLastSamplePointerAndSampleCounter(&LogDefinition);
-             
              /* Increment the new Sample Counter until the end of the Tag */
              NfcType5_UpdateSampleCounter(&LogDefinition,8);
+             
+             /* Update Sample Counter and Last Sample Pointer */
+             UpdateLastSamplePointerAndSampleCounter(&LogDefinition);
              
              AllVirtualSensorsArray[LSM6DSOX32_VS_ID].SampleDeltaDateTime=0;
            }
@@ -359,7 +371,7 @@ void SmarTagAppProcess(void)
 #endif /* SMARTAG2_VERBOSE_PRINTF */
              
              DataBuf32 = LSM6DSOX32_6D_VS_ID |
-               (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].SampleDeltaDateTime)<<3);
+               (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].SampleDeltaDateTime)<<4);
              if(BSP_NFCTAG_WriteData( BSP_NFCTAG_INSTANCE, (uint8_t *)&DataBuf32, LogDefinition.LastSamplePointer, 4)!=NFCTAG_OK){
                STNFC_Error_Handler(STNFC_WRITING_ERROR);
              }
@@ -370,11 +382,11 @@ void SmarTagAppProcess(void)
              }
              LogDefinition.LastSamplePointer+=4;
              
-             /* Update Sample Counter and Last Sample Pointer */
-             UpdateLastSamplePointerAndSampleCounter(&LogDefinition);
-             
              /* Increment the new Sample Counter until the end of the Tag */
              NfcType5_UpdateSampleCounter(&LogDefinition,8);
+             
+             /* Update Sample Counter and Last Sample Pointer */
+             UpdateLastSamplePointerAndSampleCounter(&LogDefinition);
              
              AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].SampleDeltaDateTime=0;
            }
@@ -387,7 +399,7 @@ void SmarTagAppProcess(void)
 #endif /* SMARTAG2_VERBOSE_PRINTF */
              
              DataBuf32 = LSM6DSOX32_MLC_VS_ID |
-               (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].SampleDeltaDateTime)<<3);
+               (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].SampleDeltaDateTime)<<4);
              if(BSP_NFCTAG_WriteData( BSP_NFCTAG_INSTANCE, (uint8_t *)&DataBuf32, LogDefinition.LastSamplePointer, 4)!=NFCTAG_OK){
                STNFC_Error_Handler(STNFC_WRITING_ERROR);
              }
@@ -398,13 +410,41 @@ void SmarTagAppProcess(void)
              }
              LogDefinition.LastSamplePointer+=4;
              
+             /* Increment the new Sample Counter until the end of the Tag */
+             NfcType5_UpdateSampleCounter(&LogDefinition,8);
+             
              /* Update Sample Counter and Last Sample Pointer */
              UpdateLastSamplePointerAndSampleCounter(&LogDefinition);
+             
+             AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].SampleDeltaDateTime=0;
+           }
+           
+           if(AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].SampleDeltaDateTime!=0) {
+#ifdef SMARTAG2_VERBOSE_PRINTF
+             SMARTAG2_PRINTF("Save LIS2DUXS12 MLC=%d\r\n", AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].Sample.Ui8Value);
+#else /* SMARTAG2_VERBOSE_PRINTF */
+             SMARTAG2_PRINTF("Save LIS2DUXS12 MLC\r\n");
+#endif /* SMARTAG2_VERBOSE_PRINTF */
+             
+             DataBuf32 = LIS2DUXS12_MLC_VS_ID |
+               (((uint32_t)AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].SampleDeltaDateTime)<<4);
+             if(BSP_NFCTAG_WriteData( BSP_NFCTAG_INSTANCE, (uint8_t *)&DataBuf32, LogDefinition.LastSamplePointer, 4)!=NFCTAG_OK){
+               STNFC_Error_Handler(STNFC_WRITING_ERROR);
+             }
+             LogDefinition.LastSamplePointer+=4;
+             DataBuf32 = AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].Sample.Ui8Value;
+             if(BSP_NFCTAG_WriteData( BSP_NFCTAG_INSTANCE, (uint8_t *)&DataBuf32, LogDefinition.LastSamplePointer, 4)!=NFCTAG_OK){
+               STNFC_Error_Handler(STNFC_WRITING_ERROR);
+             }
+             LogDefinition.LastSamplePointer+=4;
              
              /* Increment the new Sample Counter until the end of the Tag */
              NfcType5_UpdateSampleCounter(&LogDefinition,8);
              
-             AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].SampleDeltaDateTime=0;
+             /* Update Sample Counter and Last Sample Pointer */
+             UpdateLastSamplePointerAndSampleCounter(&LogDefinition);
+             
+             AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].SampleDeltaDateTime=0;
            }
          }
          
@@ -412,7 +452,7 @@ void SmarTagAppProcess(void)
            ReadSensorAndLog &= ~SYNC_EVENT;
            SMARTAG2_PRINTF("\r\nSync Event:\r\n");
            
-           if((AllVirtualSensorsArray[VD6283_CCT_VS_ID].Enable) | 
+           if((AllVirtualSensorsArray[VD6283_LUX_VS_ID].Enable) | 
              (AllVirtualSensorsArray[VD6283_CCT_VS_ID].Enable) | 
              (AllVirtualSensorsArray[STTS22H_VS_ID].Enable) | 
              (AllVirtualSensorsArray[LPS22DF_VS_ID].Enable)) {
@@ -443,85 +483,117 @@ SMARTAG2_SLEEP:
 */
 void SmarTagAppDetectMemsEvent(void)
 {
-  if(AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Enable | AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].Enable) {
-    BSP_MOTION_SENSOR_Event_Status_t EventStatus;
-    BSP_MOTION_SENSOR_Get_Event_Status( LSM6DSO32X_0, &EventStatus);
-    
-    if(!FirstEventNotApplicable) {
-      int32_t AccEventVmax = DetectorValueForAccEvent();
+  if(AccInit_LSM6DSO32X_Done != 0)
+  {
+    if(AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Enable | AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].Enable) {
+      BSP_MOTION_SENSOR_Event_Status_t EventStatus;
+      BSP_MOTION_SENSOR_Get_Event_Status( LSM6DSO32X_0, &EventStatus);
       
-      if((AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Enable!=0) &
-         (EventStatus.WakeUpStatus != 0) &
-           (AccEventVmax>AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Th1.Ui16Value)) {
-             uint16_t ValueToCheck;
-             ReadSensorAndLog |= ASYNC_EVENT;
-             ValueToCheck = AccEventVmax;
-             SMARTAG2_PRINTF("WakeUp=%d\r\n",ValueToCheck);
-             /* Check the Value respect Min and Max Limit Values*/
-             MCR_STNFC_CompareWithLimits(Ui16,AllVirtualSensorsArray[LSM6DSOX32_VS_ID],ValueToCheck);
-             /* Compare with Ths and Update the Max/Min Sample Value */
-             STNFC_ComputeMaxMinCompareTHsUi16t(&AllVirtualSensorsArray[LSM6DSOX32_VS_ID],&LogDefinition,&hrtc);
+      if(!FirstEventNotApplicable) {
+        int32_t AccEventVmax = DetectorValueForAccEvent();
+        
+        if((AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Enable!=0) &
+           (EventStatus.WakeUpStatus != 0) &
+             (AccEventVmax>AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Th1.Ui16Value)) {
+               uint16_t ValueToCheck;
+               ReadSensorAndLog |= ASYNC_EVENT;
+               ValueToCheck = AccEventVmax;
+               SMARTAG2_PRINTF("WakeUp=%d\r\n",ValueToCheck);
+               /* Check the Value respect Min and Max Limit Values*/
+               MCR_STNFC_CompareWithLimits(Ui16,AllVirtualSensorsArray[LSM6DSOX32_VS_ID],ValueToCheck);
+               /* Compare with Ths and Update the Max/Min Sample Value */
+               STNFC_ComputeMaxMinCompareTHsUi16t(&AllVirtualSensorsArray[LSM6DSOX32_VS_ID],&LogDefinition,&hrtc);
+               
+             } else {
+               EventStatus.WakeUpStatus= 0;
+             }
+        
+        if((AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].Enable!=0) & 
+           (EventStatus.D6DOrientationStatus != 0)) {
+             static uint8_t LastSendOrientation = ORIENTATION_UNDEF;
+             uint8_t SmarTagPosition = Understand6DOrientation();
+             uint8_t ValueToCheck = SmarTagPosition;
              
-           } else {
-             EventStatus.WakeUpStatus= 0;
+             SMARTAG2_PRINTF("6D Orientation=%d\r\n",SmarTagPosition);
+             if (SmarTagPosition != LastSendOrientation) {
+               ReadSensorAndLog |= ASYNC_EVENT;
+               LastSendOrientation = SmarTagPosition;
+               /* Check the Value respect Min and Max Limit Values*/
+               MCR_STNFC_CompareWithLimits(Ui8,AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID],ValueToCheck);
+               /* Compare with Ths and Update the Max/Min Sample Value */
+               STNFC_ComputeMaxMinCompareTHsUi8t(&AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID],&LogDefinition,&hrtc);
+             } else {
+               EventStatus.D6DOrientationStatus= 0;
+             }
            }
+      }
+      /* Reset FIFO by setting FIFO mode to Bypass */
+      BSP_MOTION_SENSOR_FIFO_Set_Mode(LSM6DSO32X_0, LSM6DSO32X_BYPASS_MODE);
       
-      if((AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].Enable!=0) & 
-         (EventStatus.D6DOrientationStatus != 0)) {
-           static uint8_t LastSendOrientation = ORIENTATION_UNDEF;
-           uint8_t SmarTagPosition = Understand6DOrientation();
-           uint8_t ValueToCheck = SmarTagPosition;
-           
-           SMARTAG2_PRINTF("6D Orientation=%d\r\n",SmarTagPosition);
-           if (SmarTagPosition != LastSendOrientation) {
-             ReadSensorAndLog |= ASYNC_EVENT;
-             LastSendOrientation = SmarTagPosition;
-             /* Check the Value respect Min and Max Limit Values*/
-             MCR_STNFC_CompareWithLimits(Ui8,AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID],ValueToCheck);
-             /* Compare with Ths and Update the Max/Min Sample Value */
-             STNFC_ComputeMaxMinCompareTHsUi8t(&AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID],&LogDefinition,&hrtc);
-           } else {
-             EventStatus.D6DOrientationStatus= 0;
-           }
-         }
+      /* Set again the FIFO in Continuous to FIFO mode */
+      BSP_MOTION_SENSOR_FIFO_Set_Mode(LSM6DSO32X_0, LSM6DSO32X_STREAM_TO_FIFO_MODE);
+      
+      FirstEventNotApplicable= 0;
     }
-    /* Reset FIFO by setting FIFO mode to Bypass */
-    BSP_MOTION_SENSOR_FIFO_Set_Mode(LSM6DSO32X_0, LSM6DSO32X_BYPASS_MODE);
     
-    /* Set again the FIFO in Continuous to FIFO mode */
-    BSP_MOTION_SENSOR_FIFO_Set_Mode(LSM6DSO32X_0, LSM6DSO32X_STREAM_TO_FIFO_MODE);
-    
-    FirstEventNotApplicable= 0;
+    if(AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].Enable) {
+      lsm6dso32x_all_sources_t status;
+      uint8_t MLCStatus;
+      lsm6dso32x_all_sources_get(LSM6DSOX32_Contex, &status);
+      MLCStatus = ((status.mlc1)    | (status.mlc2<<1) | (status.mlc3<<2) | (status.mlc4<<3) |
+                   (status.mlc5<<4) | (status.mlc6<<5) | (status.mlc7<<6) | (status.mlc8<<7));
+      
+      if(MLCStatus!=0) {
+        uint8_t mlc_out[8];
+        uint16_t Angle;
+        
+        lsm6dso32x_mlc_out_get(LSM6DSOX32_Contex, mlc_out);
+        Angle = ((uint16_t)mlc_out[0])*6;
+        
+#ifdef SMARTAG2_VERBOSE_PRINTF
+        SMARTAG2_PRINTF("MLC Tilt =%d'\r\n",Angle);
+#endif /* SMARTAG2_VERBOSE_PRINTF */
+        
+         /* Check the Value respect Min and Max Limit Values*/
+         MCR_STNFC_CompareWithLimits(Ui8,AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID],Angle);
+          
+         /* Compare with Ths and Update the Max/Min Sample Value */
+         STNFC_ComputeMaxMinCompareTHsUi8t(&AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID],&LogDefinition,&hrtc);
+         if(AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].SampleDeltaDateTime!=0) {
+           ReadSensorAndLog |= ASYNC_EVENT;
+         }
+      }
+    }
   }
   
-  if(AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].Enable) {
-    
-    /* Context of LSM6DSOX32 */
-    extern void *MotionCompObj[];
-#define LSM6DSOX32_Contex (&(((LSM6DSO32X_Object_t *)MotionCompObj[LSM6DSO32X_0])->Ctx))
-    
-    lsm6dso32x_all_sources_t status;
-    uint8_t MLCStatus;
-    lsm6dso32x_all_sources_get(LSM6DSOX32_Contex, &status);
-    MLCStatus = ((status.mlc1)    | (status.mlc2<<1) | (status.mlc3<<2) | (status.mlc4<<3) |
-                 (status.mlc5<<4) | (status.mlc6<<5) | (status.mlc7<<6) | (status.mlc8<<7));
-    
-    if(MLCStatus!=0) {
-      uint8_t mlc_out[8];
-      lsm6dso32x_mlc_out_get(LSM6DSOX32_Contex, mlc_out);
-      uint16_t Angle = ((uint16_t)mlc_out[0])*6;
-#ifdef SMARTAG2_VERBOSE_PRINTF
-      SMARTAG2_PRINTF("MLC Tilt =%d'\r\n",Angle);
-#endif /* SMARTAG2_VERBOSE_PRINTF */
-      
-       /* Check the Value respect Min and Max Limit Values*/
-       MCR_STNFC_CompareWithLimits(Ui8,AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID],Angle);
+  if(AccInit_LIS2DUXS12_Done != 0)
+  {
+    if(AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].Enable) { 
+      lis2duxs12_mlc_status_mainpage_t status;
+      uint8_t MLCStatus;
+      lis2duxs12_mlc_status_get(LIS2DUXS12_Contex, &status);
+      MLCStatus = ((status.is_mlc1) | (status.is_mlc2) | (status.is_mlc3) | (status.is_mlc4));
+
+      if(MLCStatus!=0) {
+        uint8_t mlc_out[8];
+        uint8_t AT_Ouput;
+          
+        lis2duxs12_mlc_out_get(LIS2DUXS12_Contex, mlc_out);
+        AT_Ouput = mlc_out[0];
         
-       /* Compare with Ths and Update the Max/Min Sample Value */
-       STNFC_ComputeMaxMinCompareTHsUi8t(&AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID],&LogDefinition,&hrtc);
-       if(AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].SampleDeltaDateTime!=0) {
-         ReadSensorAndLog |= ASYNC_EVENT;
-       }
+#ifdef SMARTAG2_VERBOSE_PRINTF
+        SMARTAG2_PRINTF("MLC AT =%d\r\n",AT_Ouput);
+#endif /* SMARTAG2_VERBOSE_PRINTF */
+        
+        /* Check the Value respect Min and Max Limit Values*/
+        MCR_STNFC_CompareWithLimits(Ui8,AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID],AT_Ouput);
+        
+        /* Compare with Ths and Update the Max/Min Sample Value */
+        STNFC_ComputeMaxMinCompareTHsUi8t(&AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID],&LogDefinition,&hrtc);
+        if(AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].SampleDeltaDateTime!=0) {
+          ReadSensorAndLog |= ASYNC_EVENT;
+        }
+      }
     }
   }
 }
@@ -644,145 +716,260 @@ static int32_t InitDeInitAccEventThreshold(void)
 {
   int32_t Success= BSP_ERROR_NONE;
   
+  static uint8_t FirstTime_LSM6DSOX32=0;
+  static uint8_t FirstTime_LIS2DUXS12=0;
+  
   FirstEventNotApplicable= 1;
   
   if((AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Enable) |
      (AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].Enable) |
-       (AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].Enable)) {
+     (AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].Enable) |
+     (AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].Enable) ) {
          
-         SMARTAG2_PRINTF("Init Accelerometer Events:\r\n");
-         
-         if(BSP_MOTION_SENSOR_Init(LSM6DSO32X_0, MOTION_ACCELERO)!=BSP_ERROR_NONE) {
-           SMARTAG2_PRINTF("Error Init LSM6DSOX32\r\n");
-         } else {
-           SMARTAG2_PRINTF("Init LSM6DSOX32\r\n");
-         }
-         
-         /* Enable wake up events */
-         if(AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Enable){
-           /* Enable Wake Up */
-           uint8_t WakeUpTHS= 1;
-           uint32_t Th_Max;
-           SMARTAG2_PRINTF("WakeUp On\r\n");
-           Success = BSP_MOTION_SENSOR_Enable_Wake_Up_Detection(LSM6DSO32X_0, MOTION_SENSOR_INT1_PIN);
+       SMARTAG2_PRINTF("Init Accelerometer Events:\r\n");
+   
+       if((AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Enable) |
+          (AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].Enable) |
+          (AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].Enable)) {
            
-           if(Success!=BSP_ERROR_NONE) {
-             SMARTAG2_PRINTF("\r\nError enabling WakeUp\r\n");
-             return Success;
-           }
-           
-           Success = BSP_MOTION_SENSOR_SetFullScale(LSM6DSO32X_0, MOTION_ACCELERO, 16); /* FullScale 16G */
-           
-           if(Success!=BSP_ERROR_NONE) {
-             SMARTAG2_PRINTF("\r\nError Setting Full Scale\r\n");
-             return Success;
-           }
-           
-           Th_Max= AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Th1.Ui16Value>>8;
-           if(Th_Max < 1) {
-             WakeUpTHS= 1;
-           } else if(Th_Max > 63) {
-             WakeUpTHS= 63;
-           } else {
-             WakeUpTHS = Th_Max;
-           }
-           
-#ifdef SMARTAG2_VERBOSE_PRINTF
-           SMARTAG2_PRINTF("Acc_Th_Max= %ld\tWakeUpTHS= %d\r\n", AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Th1.Ui16Value, WakeUpTHS);
-#endif /* SMARTAG2_VERBOSE_PRINTF */
-           
-           Success = BSP_MOTION_SENSOR_Set_Wake_Up_Threshold(LSM6DSO32X_0, WakeUpTHS);
-           if(Success!=BSP_ERROR_NONE) {
-             SMARTAG2_PRINTF("\r\nError Setting WakeUp Threshold\r\n");
-             return Success;
-           }
-         } else {
-           /* Disable Wake Up */
-           SMARTAG2_PRINTF("WakeUp Off\r\n");
-           Success = BSP_MOTION_SENSOR_Disable_Wake_Up_Detection(LSM6DSO32X_0);
-           if(Success!=BSP_ERROR_NONE) {
-             SMARTAG2_PRINTF("\r\nError disabling WakeUp\r\n");
-             return Success;
-           }
-         }
-         
-         /* Enable 6D orientation events */
-         if(AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].Enable) {
-           /* Enable 6D Orientation */
-           SMARTAG2_PRINTF("6D On\r\n");
-           Success = BSP_MOTION_SENSOR_Enable_6D_Orientation(LSM6DSO32X_0, MOTION_SENSOR_INT1_PIN);
-           if(Success!=BSP_ERROR_NONE) {
-             SMARTAG2_PRINTF("\r\nError enabling 6D\r\n");
-             return Success;
-           }
-           Success = BSP_MOTION_SENSOR_SetFullScale(LSM6DSO32X_0, MOTION_ACCELERO, 16); /* FullScale 16G */
-           if(Success!=BSP_ERROR_NONE) {
-             SMARTAG2_PRINTF("\r\nError Setting 6D Threshold\r\n");
-             return Success;
-           }
-         } else {
-           /* Disable 6D Orientation */
-           SMARTAG2_PRINTF("6D Off\r\n");
-           Success = BSP_MOTION_SENSOR_Disable_6D_Orientation(LSM6DSO32X_0);
-           if(Success!=BSP_ERROR_NONE) {
-             SMARTAG2_PRINTF("\r\nError Disabling 6D\r\n");
-             return Success;
-           }
-         }
-         SMARTAG2_PRINTF("\r\n");
-         
-         
-         if((AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Enable) |
-            (AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].Enable) ) {
-              /* Set the FIFO in Continuous to FIFO mode */
-              {
-                float Bdr;
-                Success = BSP_MOTION_SENSOR_GetOutputDataRate(LSM6DSO32X_0,MOTION_ACCELERO,&Bdr);
-                if(Success!=BSP_ERROR_NONE) {
-                  SMARTAG2_PRINTF("\r\nError Reading ODR\r\n");
-                  return Success;
-                }
-                Success = BSP_MOTION_SENSOR_FIFO_Set_BDR(LSM6DSO32X_0,MOTION_ACCELERO,Bdr);
-                if(Success!=BSP_ERROR_NONE) {
-                  SMARTAG2_PRINTF("\r\nError Setting FIFO BDR\r\n");
-                  return Success;
-                }
-              }
-              Success = BSP_MOTION_SENSOR_FIFO_Set_Mode(LSM6DSO32X_0, LSM6DSO32X_STREAM_TO_FIFO_MODE);
-              if(Success!=BSP_ERROR_NONE) {
-                SMARTAG2_PRINTF("\r\nError Setting FIFO Mode\r\n");
-              }
-            } else {
-              /* Set the FIFO Bypass mode */
-              Success = BSP_MOTION_SENSOR_FIFO_Set_Mode(LSM6DSO32X_0, LSM6DSO32X_BYPASS_MODE);  
-              if(Success!=BSP_ERROR_NONE) {
-                SMARTAG2_PRINTF("\r\nError Setting FIFO Mode\r\n");
-              }
+            if(FirstTime_LSM6DSOX32)
+            {
+              BSP_MOTION_SENSOR_DeInit(LSM6DSO32X_0);
             }
-         
-         /* lsm6dso32x MLC sensor: Init */
-         if(AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].Enable) {
-           ucf_line_t *ProgramPointer;
-           int32_t LineCounter;
-           int32_t TotalNumberOfLine;
-           int32_t RetValue;
-           
-           ProgramPointer = (ucf_line_t *)lsm6dso32x_tilt_angle_mode0;
-           TotalNumberOfLine = sizeof(lsm6dso32x_tilt_angle_mode0) / sizeof(ucf_line_t);
-           for (LineCounter=0; LineCounter<TotalNumberOfLine; LineCounter++) {
-             RetValue = BSP_MOTION_SENSOR_Write_Register(LSM6DSO32X_0,
-                                                         ProgramPointer[LineCounter].address,
-                                                         ProgramPointer[LineCounter].data);
-             if(RetValue!=BSP_ERROR_NONE) {
-               SMARTAG2_PRINTF("Error loading the Program to LSM6DSO32X [%ld]->%lx\n\r",LineCounter,RetValue);
-               STNFC_Error_Handler(STNFC_INIT_ERROR);
+            FirstTime_LSM6DSOX32= 1;
+  
+            if(BSP_MOTION_SENSOR_Init(LSM6DSO32X_0, MOTION_ACCELERO)!=BSP_ERROR_NONE) {
+              SMARTAG2_PRINTF("Error Init LSM6DSOX32\r\n");
+            } else {
+              SMARTAG2_PRINTF("Init LSM6DSOX32\r\n");
+            }
+     
+           /* Enable wake up events */
+           if(AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Enable){
+             /* Enable Wake Up */
+             uint8_t WakeUpTHS= 1;
+             uint32_t Th_Max;
+             SMARTAG2_PRINTF("WakeUp On\r\n");
+             Success = BSP_MOTION_SENSOR_Enable_Wake_Up_Detection(LSM6DSO32X_0, MOTION_SENSOR_INT1_PIN);
+             
+             if(Success!=BSP_ERROR_NONE) {
+               SMARTAG2_PRINTF("\r\nError enabling WakeUp\r\n");
+               return Success;
+             }
+             
+             Success = BSP_MOTION_SENSOR_SetFullScale(LSM6DSO32X_0, MOTION_ACCELERO, 16); /* FullScale 16G */
+             
+             if(Success!=BSP_ERROR_NONE) {
+               SMARTAG2_PRINTF("\r\nError Setting Full Scale\r\n");
+               return Success;
+             }
+             
+             Th_Max= AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Th1.Ui16Value>>8;
+             if(Th_Max < 1) {
+               WakeUpTHS= 1;
+             } else if(Th_Max > 63) {
+               WakeUpTHS= 63;
+             } else {
+               WakeUpTHS = Th_Max;
+             }
+             
+      #ifdef SMARTAG2_VERBOSE_PRINTF
+             SMARTAG2_PRINTF("Acc_Th_Max= %ld\tWakeUpTHS= %d\r\n", AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Th1.Ui16Value, WakeUpTHS);
+      #endif /* SMARTAG2_VERBOSE_PRINTF */
+             
+             Success = BSP_MOTION_SENSOR_Set_Wake_Up_Threshold(LSM6DSO32X_0, WakeUpTHS);
+             if(Success!=BSP_ERROR_NONE) {
+               SMARTAG2_PRINTF("\r\nError Setting WakeUp Threshold\r\n");
+               return Success;
+             }
+           } else {
+             /* Disable Wake Up */
+             SMARTAG2_PRINTF("WakeUp Off\r\n");
+             Success = BSP_MOTION_SENSOR_Disable_Wake_Up_Detection(LSM6DSO32X_0);
+             if(Success!=BSP_ERROR_NONE) {
+               SMARTAG2_PRINTF("\r\nError disabling WakeUp\r\n");
+               return Success;
              }
            }
-           SMARTAG2_PRINTF("MLC program Loaded on LSM6DSO32X [%d]\r\n",TotalNumberOfLine);
-           SMARTAG2_PRINTF("    Detect angles from 0 to 90 degrees\r\n");
-         }
-       }
-  
+     
+           /* Enable 6D orientation events */
+           if(AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].Enable) {
+             /* Enable 6D Orientation */
+             SMARTAG2_PRINTF("6D On\r\n");
+             Success = BSP_MOTION_SENSOR_Enable_6D_Orientation(LSM6DSO32X_0, MOTION_SENSOR_INT1_PIN);
+             if(Success!=BSP_ERROR_NONE) {
+               SMARTAG2_PRINTF("\r\nError enabling 6D\r\n");
+               return Success;
+             }
+             Success = BSP_MOTION_SENSOR_SetFullScale(LSM6DSO32X_0, MOTION_ACCELERO, 16); /* FullScale 16G */
+             if(Success!=BSP_ERROR_NONE) {
+               SMARTAG2_PRINTF("\r\nError Setting 6D Threshold\r\n");
+               return Success;
+             }
+           } else {
+             /* Disable 6D Orientation */
+             SMARTAG2_PRINTF("6D Off\r\n");
+             Success = BSP_MOTION_SENSOR_Disable_6D_Orientation(LSM6DSO32X_0);
+             if(Success!=BSP_ERROR_NONE) {
+               SMARTAG2_PRINTF("\r\nError Disabling 6D\r\n");
+               return Success;
+             }
+           }
+           
+           SMARTAG2_PRINTF("\r\n");
+           
+           if((AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Enable) |
+              (AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].Enable) ) {
+                /* Set the FIFO in Continuous to FIFO mode */
+                {
+                  float Bdr;
+                  Success = BSP_MOTION_SENSOR_GetOutputDataRate(LSM6DSO32X_0,MOTION_ACCELERO,&Bdr);
+                  if(Success!=BSP_ERROR_NONE) {
+                    SMARTAG2_PRINTF("\r\nError Reading ODR\r\n");
+                    return Success;
+                  }
+                  Success = BSP_MOTION_SENSOR_FIFO_Set_BDR(LSM6DSO32X_0,MOTION_ACCELERO,Bdr);
+                  if(Success!=BSP_ERROR_NONE) {
+                    SMARTAG2_PRINTF("\r\nError Setting FIFO BDR\r\n");
+                    return Success;
+                  }
+                }
+                Success = BSP_MOTION_SENSOR_FIFO_Set_Mode(LSM6DSO32X_0, LSM6DSO32X_STREAM_TO_FIFO_MODE);
+                if(Success!=BSP_ERROR_NONE) {
+                  SMARTAG2_PRINTF("\r\nError Setting FIFO Mode\r\n");
+                }
+              } else {
+                /* Set the FIFO Bypass mode */
+                Success = BSP_MOTION_SENSOR_FIFO_Set_Mode(LSM6DSO32X_0, LSM6DSO32X_BYPASS_MODE);  
+                if(Success!=BSP_ERROR_NONE) {
+                  SMARTAG2_PRINTF("\r\nError Setting FIFO Mode\r\n");
+                }
+              }
+     
+             /* lsm6dso32x MLC sensor: Init */
+           
+           if(AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].Enable) {
+             ucf_line_t *ProgramPointer;
+             int32_t LineCounter;
+             int32_t TotalNumberOfLine;
+             int32_t RetValue;
+               
+             ProgramPointer = (ucf_line_t *)lsm6dso32x_tilt_angle_mode0;
+             TotalNumberOfLine = sizeof(lsm6dso32x_tilt_angle_mode0) / sizeof(ucf_line_t);
+             for (LineCounter=0; LineCounter<TotalNumberOfLine; LineCounter++) {
+               RetValue = BSP_MOTION_SENSOR_Write_Register(LSM6DSO32X_0,
+                                                           ProgramPointer[LineCounter].address,
+                                                           ProgramPointer[LineCounter].data);
+               if(RetValue!=BSP_ERROR_NONE) {
+                 SMARTAG2_PRINTF("Error loading the Program to LSM6DSO32X [%ld]->%lx\n\r",LineCounter,RetValue);
+                 STNFC_Error_Handler(STNFC_INIT_ERROR);
+               }
+             }
+               SMARTAG2_PRINTF("MLC program Loaded on LSM6DSO32X [%d]\r\n",TotalNumberOfLine);
+               SMARTAG2_PRINTF("    Detect angles from 0 to 90 degrees\r\n");
+           }
+           
+           AccInit_LSM6DSO32X_Done= 1;
+          } else {
+            if(FirstTime_LSM6DSOX32)
+            {
+              BSP_MOTION_SENSOR_DeInit(LSM6DSO32X_0);
+            }
+            
+            AccInit_LSM6DSO32X_Done= 0;
+          }
+   
+       if((AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].Enable) |
+          (AllVirtualSensorsArray[LIS2DUXS12_VS_ID].Enable) |
+          (AllVirtualSensorsArray[LIS2DUXS12_6D_VS_ID].Enable)) {
+            
+            if(FirstTime_LIS2DUXS12)
+            {
+              BSP_MOTION_SENSOR_DeInit(LIS2DUXS12_0);
+            }
+            FirstTime_LIS2DUXS12= 1;
+     
+            if(BSP_MOTION_SENSOR_Init(LIS2DUXS12_0, MOTION_ACCELERO)!=BSP_ERROR_NONE) {
+               SMARTAG2_PRINTF("Error Init LIS2DUXS12\r\n");
+             } else {
+               SMARTAG2_PRINTF("Init LIS2DUXS12\r\n");
+             }
+             
+             /* lis2duxs12 MLC sensor: Init */
+             if(AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].Enable) {
+               ucf_line_ext_t *ProgramPointer;
+               int32_t LineCounter;
+               int32_t TotalNumberOfLine;
+               int32_t RetValue;
+               
+               ProgramPointer = (ucf_line_ext_t *)at_lp;
+               TotalNumberOfLine = sizeof(at_lp) / sizeof(ucf_line_ext_t);
+               for (LineCounter=0; LineCounter<TotalNumberOfLine; LineCounter++) {
+                 switch(ProgramPointer[LineCounter].op) {
+                 case MEMS_UCF_OP_WRITE:
+                   /* MEMS_UCF_OP_WRITE: write the value specified by the "data" field at the
+                    *  location specified by the "address" field */
+                   RetValue = BSP_MOTION_SENSOR_Write_Register(LIS2DUXS12_0,
+                                                             ProgramPointer[LineCounter].address,
+                                                             ProgramPointer[LineCounter].data);
+                 break;
+                 case MEMS_UCF_OP_DELAY:
+                   /* MEMS_UCF_OP_DELAY: wait the number of milliseconds specified by the "data"
+                    * field ("address" field is ignored) */
+                   HAL_Delay(ProgramPointer[LineCounter].data);
+                 break;
+                 case MEMS_UCF_OP_POLL_SET:
+                   /* MEMS_UCF_OP_POLL_SET: poll the register at the location specified by the
+                    * "address" field until all the bits identified by the mask specified by the
+                    * "data" field are set to 1 */
+                   {
+                     uint8_t Data;
+                     do {
+                      RetValue = BSP_MOTION_SENSOR_Read_Register(LIS2DUXS12_0, ProgramPointer[LineCounter].address,&Data);
+                      HAL_Delay(1);
+                     } while((Data & ProgramPointer[LineCounter].data)!=ProgramPointer[LineCounter].data);
+                   }
+                 break;
+                 case MEMS_UCF_OP_POLL_RESET:
+                   /* MEMS_UCF_OP_POLL_RESET: poll the register at the location specified by the
+                    * "address" field until all the bits identified by the mask specified by the
+                    * "data" field are reset to 0 */
+                   {
+                     uint8_t Data;
+                     do {
+                      RetValue = BSP_MOTION_SENSOR_Read_Register(LIS2DUXS12_0, ProgramPointer[LineCounter].address,&Data);
+                      HAL_Delay(1);
+                     } while((Data & ProgramPointer[LineCounter].data)!=0);
+                   }
+                 break;  
+                 case MEMS_UCF_OP_READ:
+                   /*  MEMS_UCF_OP_READ: read the register at the location specified by the
+                    *  "address" field ("data" field is ignored */
+                   {
+                     uint8_t Data;
+                     RetValue = BSP_MOTION_SENSOR_Read_Register(LIS2DUXS12_0, ProgramPointer[LineCounter].address,&Data);
+                   }
+                 break;
+                 }
+                 
+                 if(RetValue!=BSP_ERROR_NONE) {
+                   SMARTAG2_PRINTF("Error loading the Program to LIS2DUXS12 [%ld]->%lx\n\r",LineCounter,RetValue);
+                   STNFC_Error_Handler(STNFC_INIT_ERROR);
+                 }
+               }
+               SMARTAG2_PRINTF("MLC program Loaded on LIS2DUXS12 [%d]\r\n",TotalNumberOfLine);
+               SMARTAG2_PRINTF("    Asset Tracking Low Power\r\n");
+             }
+             
+             AccInit_LIS2DUXS12_Done= 1;
+          } else {
+            AccInit_LIS2DUXS12_Done= 0;
+            if(FirstTime_LIS2DUXS12)
+            {
+              BSP_MOTION_SENSOR_DeInit(LIS2DUXS12_0);
+            }
+          }
+     }
   return Success;
 }
 
@@ -837,7 +1024,8 @@ static void CheckIfNewConfiguration(void)
     /* Power On/Off the Intertial sensors */
     if((AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Enable) |
        (AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].Enable) |
-       (AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].Enable)) {
+       (AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].Enable) |
+       (AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].Enable)  ) {
        BSP_SmarTag2_ACC_PowerOn();
        SMARTAG2_PRINTF("VDD ACC On\r\n");
      } else {
@@ -881,9 +1069,9 @@ static void ReadConfiguration(SNFC_LogDefinition_t *LogDefinition,uint32_t Curre
     LogDefinition->LastSamplePointer+=4;
     
     /* Check the protocol header */
-    if((LocalSmarTag2CodeHeader->ProtVersion  != SMARTAG2_RECORD_VERSION) &
-       (LocalSmarTag2CodeHeader->ProtRevision != SMARTAG2_RECORD_REVISION) &
-       (LocalSmarTag2CodeHeader->BoardId      != SMARTAG2_BOARD_ID) &
+    if((LocalSmarTag2CodeHeader->ProtVersion  != SMARTAG2_RECORD_VERSION) |
+       (LocalSmarTag2CodeHeader->ProtRevision != SMARTAG2_RECORD_REVISION) |
+       (LocalSmarTag2CodeHeader->BoardId      != SMARTAG2_BOARD_ID) |
        (LocalSmarTag2CodeHeader->FirmwareId   != SMARTAG2_FIRMWARE_ID)) {
              SMARTAG2_PRINTF("Error: Protocol Header not valid\r\n");
              ValidConf=STNFC_NOT_VALID_CONFIG;
@@ -956,18 +1144,18 @@ static void ReadConfiguration(SNFC_LogDefinition_t *LogDefinition,uint32_t Curre
       }
       if(ValidConf==STNFC_VALID_CONFIG) {
         LogDefinition->LastSamplePointer+=4;
-        switch(DataBuf32&0x7) {
+        switch(DataBuf32&0xF) {
         case LSM6DSOX32_MLC_VS_ID:
           SMARTAG2_PRINTF("\tFound LSM6DSOX32_MLC_VS_ID:\r\n");
           if(OnlyChecks==0) {
             ConfiguratedVirtualSensorsArray[SensorNum] = &AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID];
             ConfiguratedVirtualSensorsArray[SensorNum]->Enable=1;
-            ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType = (SNFC_ThresholdsUsage_t)((DataBuf32>>3)&0x3);
-            ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui8Value = (DataBuf32>>(3+2))&0xFF;
+            ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType = (SNFC_ThresholdsUsage_t)((DataBuf32>>4)&0x3);
+            ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui8Value = (DataBuf32>>(4+2))&0xFF;
             SMARTAG2_PRINTF("\tThsUsageType=%s\r\n",ThresholdsUsageName[ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType]);
             SMARTAG2_PRINTF("\tTh1.Ui8Value=%d\r\n",ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui8Value);
             if(ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType<TH_LESS) {
-              ConfiguratedVirtualSensorsArray[SensorNum]->Th2.Ui8Value = (DataBuf32>>(3+2+8))&0xFF;
+              ConfiguratedVirtualSensorsArray[SensorNum]->Th2.Ui8Value = (DataBuf32>>(4+2+8))&0xFF;
               SMARTAG2_PRINTF("\tTh2.Ui8Value=%d\r\n",ConfiguratedVirtualSensorsArray[SensorNum]->Th2.Ui8Value);
             }
             
@@ -983,17 +1171,43 @@ static void ReadConfiguration(SNFC_LogDefinition_t *LogDefinition,uint32_t Curre
           }
           break;
           
+        case LIS2DUXS12_MLC_VS_ID:
+          SMARTAG2_PRINTF("\tFound LIS2DUXS12_MLC_VS_ID:\r\n");
+          if(OnlyChecks==0) {
+            ConfiguratedVirtualSensorsArray[SensorNum] = &AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID];
+            ConfiguratedVirtualSensorsArray[SensorNum]->Enable=1;
+            ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType = (SNFC_ThresholdsUsage_t)((DataBuf32>>4)&0x3);
+            ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui8Value = (DataBuf32>>(4+2))&0xFF;
+            SMARTAG2_PRINTF("\tThsUsageType=%s\r\n",ThresholdsUsageName[ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType]);
+            SMARTAG2_PRINTF("\tTh1.Ui8Value=%d\r\n",ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui8Value);
+            if(ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType<TH_LESS) {
+              ConfiguratedVirtualSensorsArray[SensorNum]->Th2.Ui8Value = (DataBuf32>>(4+2+8))&0xFF;
+              SMARTAG2_PRINTF("\tTh2.Ui8Value=%d\r\n",ConfiguratedVirtualSensorsArray[SensorNum]->Th2.Ui8Value);
+            }
+            
+            /* Check Virtual Sensors Incompatibility */
+            if(AllVirtualSensorsArray[LIS2DUXS12_VS_ID].Enable) {
+              SMARTAG2_PRINTF("\tWarning: Incompatibility with WakeUp\r\n\tDisable WakeUp\r\n");
+              AllVirtualSensorsArray[LIS2DUXS12_VS_ID].Enable=0;
+            }
+            if(AllVirtualSensorsArray[LIS2DUXS12_6D_VS_ID].Enable) {
+               SMARTAG2_PRINTF("\tWarning Incompatibility with 6D Orientation\r\n\tDisable 6D Orientation\r\n");
+               AllVirtualSensorsArray[LIS2DUXS12_6D_VS_ID].Enable=0;
+            }
+          }
+          break;
+          
         case STTS22H_VS_ID:
           SMARTAG2_PRINTF("\tFound STTS22H_VS_ID:\r\n");
           if(OnlyChecks==0) {
             ConfiguratedVirtualSensorsArray[SensorNum] = &AllVirtualSensorsArray[STTS22H_VS_ID];
             ConfiguratedVirtualSensorsArray[SensorNum]->Enable=1;
-            ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType = (SNFC_ThresholdsUsage_t)((DataBuf32>>3)&0x3);
-            ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui16Value = (DataBuf32>>(3+2))&0x1FF;
+            ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType = (SNFC_ThresholdsUsage_t)((DataBuf32>>4)&0x3);
+            ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui16Value = (DataBuf32>>(4+2))&0x1FF;
             SMARTAG2_PRINTF("\tThsUsageType=%s\r\n",ThresholdsUsageName[ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType]);
             SMARTAG2_PRINTF("\tTh1.Ui16Value=%f\r\n",STTS22H_CODED_TO_SAMPLE(ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui16Value));
             if(ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType<TH_LESS) {
-              ConfiguratedVirtualSensorsArray[SensorNum]->Th2.Ui16Value = (DataBuf32>>(3+2+9))&0x1FF;
+              ConfiguratedVirtualSensorsArray[SensorNum]->Th2.Ui16Value = (DataBuf32>>(4+2+9))&0x1FF;
               SMARTAG2_PRINTF("\tTh2.Ui16Value=%f\r\n",STTS22H_CODED_TO_SAMPLE(ConfiguratedVirtualSensorsArray[SensorNum]->Th2.Ui16Value));
             }
           }
@@ -1004,12 +1218,12 @@ static void ReadConfiguration(SNFC_LogDefinition_t *LogDefinition,uint32_t Curre
           if(OnlyChecks==0) {
             ConfiguratedVirtualSensorsArray[SensorNum] = &AllVirtualSensorsArray[LPS22DF_VS_ID];
             ConfiguratedVirtualSensorsArray[SensorNum]->Enable=1;
-            ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType = (SNFC_ThresholdsUsage_t)((DataBuf32>>3)&0x3);
-            ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui16Value = (DataBuf32>>(3+2))&0x7FF;
+            ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType = (SNFC_ThresholdsUsage_t)((DataBuf32>>4)&0x3);
+            ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui16Value = (DataBuf32>>(4+2))&0x7FF;
             SMARTAG2_PRINTF("\tThsUsageType=%s\r\n",ThresholdsUsageName[ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType]);
             SMARTAG2_PRINTF("\tTh1.Ui16Value=%f\r\n",LPS22DF_CODED_TO_SAMPLE(ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui16Value));
             if(ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType<TH_LESS) {
-              ConfiguratedVirtualSensorsArray[SensorNum]->Th2.Ui16Value = (DataBuf32>>(3+2+11))&0x7FF;
+              ConfiguratedVirtualSensorsArray[SensorNum]->Th2.Ui16Value = (DataBuf32>>(4+2+11))&0x7FF;
               SMARTAG2_PRINTF("\tTh2.Ui16Value=%f\r\n",LPS22DF_CODED_TO_SAMPLE(ConfiguratedVirtualSensorsArray[SensorNum]->Th2.Ui16Value));
             }
           }
@@ -1020,8 +1234,8 @@ static void ReadConfiguration(SNFC_LogDefinition_t *LogDefinition,uint32_t Curre
           if(OnlyChecks==0) {
             ConfiguratedVirtualSensorsArray[SensorNum] = &AllVirtualSensorsArray[VD6283_LUX_VS_ID];
             ConfiguratedVirtualSensorsArray[SensorNum]->Enable=1;
-            ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType = (SNFC_ThresholdsUsage_t)((DataBuf32>>3)&0x3);
-            ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui32Value = (DataBuf32>>(3+2))&0x1FFFFFF;
+            ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType = (SNFC_ThresholdsUsage_t)((DataBuf32>>4)&0x3);
+            ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui32Value = (DataBuf32>>(4+2))&0x1FFFFFF;
             SMARTAG2_PRINTF("\tThsUsageType=%s\r\n",ThresholdsUsageName[ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType]);
             SMARTAG2_PRINTF("\tTh1.Ui32Value=%f\r\n",VD6283_LUX_CODED_TO_SAMPLE(ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui32Value));
           }
@@ -1032,8 +1246,8 @@ static void ReadConfiguration(SNFC_LogDefinition_t *LogDefinition,uint32_t Curre
           if(OnlyChecks==0) {
             ConfiguratedVirtualSensorsArray[SensorNum] = &AllVirtualSensorsArray[LSM6DSOX32_VS_ID];
             ConfiguratedVirtualSensorsArray[SensorNum]->Enable=1;
-            ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType = (SNFC_ThresholdsUsage_t)((DataBuf32>>3)&0x3);
-            ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui16Value = (DataBuf32>>(3+2))&0x7FFFF;
+            ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType = (SNFC_ThresholdsUsage_t)((DataBuf32>>4)&0x3);
+            ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui16Value = (DataBuf32>>(4+2))&0x7FFFF;
             SMARTAG2_PRINTF("\tThsUsageType=%s\r\n",ThresholdsUsageName[ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType]);
             SMARTAG2_PRINTF("\tTh1.Ui16Value=%d\r\n",ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui16Value);
             
@@ -1050,12 +1264,12 @@ static void ReadConfiguration(SNFC_LogDefinition_t *LogDefinition,uint32_t Curre
           if(OnlyChecks==0) {
             ConfiguratedVirtualSensorsArray[SensorNum] = &AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID];
             ConfiguratedVirtualSensorsArray[SensorNum]->Enable=1;
-            ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType = (SNFC_ThresholdsUsage_t)((DataBuf32>>3)&0x3);
-            ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui8Value = (DataBuf32>>(3+2))&0xFF;
+            ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType = (SNFC_ThresholdsUsage_t)((DataBuf32>>4)&0x3);
+            ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui8Value = (DataBuf32>>(4+2))&0xFF;
             SMARTAG2_PRINTF("\tThsUsageType=%s\r\n",ThresholdsUsageName[ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType]);
             SMARTAG2_PRINTF("\tTh1.Ui8Value=%d\r\n",ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui8Value);
             if(ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType<TH_LESS) {
-              ConfiguratedVirtualSensorsArray[SensorNum]->Th2.Ui8Value = (DataBuf32>>(3+2+8))&0xFF;
+              ConfiguratedVirtualSensorsArray[SensorNum]->Th2.Ui8Value = (DataBuf32>>(4+2+8))&0xFF;
               SMARTAG2_PRINTF("\tTh2.Ui8Value=%d\r\n",ConfiguratedVirtualSensorsArray[SensorNum]->Th2.Ui8Value);
             }
             
@@ -1068,7 +1282,7 @@ static void ReadConfiguration(SNFC_LogDefinition_t *LogDefinition,uint32_t Curre
           break;
         default:
           ValidConf=STNFC_NOT_VALID_CONFIG;
-          SMARTAG2_PRINTF("Error: Not recognized VirtualSensorID=%d\r\n",DataBuf32&0x7);
+          SMARTAG2_PRINTF("Error: Not recognized VirtualSensorID=%d\r\n",DataBuf32&0xF);
         }
       }
     }
@@ -1164,6 +1378,26 @@ static void SetAllAvailableVirtualSensors(void)
   AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].Th2.Ui8Value = 50;
   AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].MaxLimit.Ui8Value = 90;
   AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].MinLimit.Ui8Value = 0;
+  
+  //Number 7
+  AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].VirtualSensorId = LIS2DUXS12_MLC_VS_ID;
+  AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].Enable=0;
+  AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].SensorType=VST_UI8;
+  AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].ThsUsageType=TH_EXT;
+  AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].Th1.Ui8Value = AT_STATIONARY_UPRIGHT;
+  AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].Th2.Ui8Value = AT_STATIONARY_UPRIGHT;
+  AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].MaxLimit.Ui8Value = AT_SHAKEN;
+  AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].MinLimit.Ui8Value = AT_STATIONARY_UPRIGHT;
+  
+  //Number 8
+  AllVirtualSensorsArray[LIS2DUXS12_VS_ID].VirtualSensorId = LIS2DUXS12_VS_ID;
+  AllVirtualSensorsArray[LIS2DUXS12_VS_ID].Enable=0;
+  
+  //Number 9
+  AllVirtualSensorsArray[LIS2DUXS12_6D_VS_ID].VirtualSensorId = LIS2DUXS12_6D_VS_ID;
+  AllVirtualSensorsArray[LIS2DUXS12_6D_VS_ID].Enable=0;
+  
+  
 }
 
 /**
@@ -1312,7 +1546,7 @@ static void ResetMaxMinValuesAllVirtualSensors(void)
     AllVirtualSensorsArray[LSM6DSOX32_VS_ID].MaxDeltaDateTime = 0;
     AllVirtualSensorsArray[LSM6DSOX32_VS_ID].MinDeltaDateTime = 0;
   }
-  // For LSM6DSOX32_MLC_VS_ID and LSM6DSOX32_6D_VS_ID there are not Max/Min
+  // For LSM6DSOX32_MLC_VS_ID, LSM6DSOX32_6D_VS_ID and LIS2DUXS12_MLC_VS_ID there are not Max/Min
 }
 
 
@@ -1415,9 +1649,9 @@ static void SaveVirtualSensorsConfiguration(void)
     if(ConfiguratedVirtualSensorsArray[SensorNum] == &AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID]) {
       
       DataBuf32 = LSM6DSOX32_MLC_VS_ID |
-        (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].ThsUsageType)<<3) |
-        (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].Th1.Ui8Value)<<(3+2)) |
-        (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].Th2.Ui8Value)<<(3+2+8));
+        (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].ThsUsageType)<<4) |
+        (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].Th1.Ui8Value)<<(4+2)) |
+        (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_MLC_VS_ID].Th2.Ui8Value)<<(4+2+8));
       if(BSP_NFCTAG_WriteData( BSP_NFCTAG_INSTANCE, (uint8_t *)&DataBuf32, LogDefinition.LastSamplePointer, 4)!=NFCTAG_OK){
         STNFC_Error_Handler(STNFC_WRITING_ERROR);
       }
@@ -1430,12 +1664,30 @@ static void SaveVirtualSensorsConfiguration(void)
         SMARTAG2_PRINTF("\tTh2.Ui8Value=%d\r\n",ConfiguratedVirtualSensorsArray[SensorNum]->Th2.Ui8Value);
       }
       
+    } else if(ConfiguratedVirtualSensorsArray[SensorNum] == &AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID]) {
+      
+      DataBuf32 = LIS2DUXS12_MLC_VS_ID |
+        (((uint32_t)AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].ThsUsageType)<<4) |
+        (((uint32_t)AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].Th1.Ui8Value)<<(4+2)) |
+        (((uint32_t)AllVirtualSensorsArray[LIS2DUXS12_MLC_VS_ID].Th2.Ui8Value)<<(4+2+8));
+      if(BSP_NFCTAG_WriteData( BSP_NFCTAG_INSTANCE, (uint8_t *)&DataBuf32, LogDefinition.LastSamplePointer, 4)!=NFCTAG_OK){
+        STNFC_Error_Handler(STNFC_WRITING_ERROR);
+      }
+      LogDefinition.LastSamplePointer+=4;
+      
+      SMARTAG2_PRINTF("Save LIS2DUXS12_MLC_VS_ID:\r\n");
+      SMARTAG2_PRINTF("\tThsUsageType=%s\r\n",ThresholdsUsageName[ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType]);
+      SMARTAG2_PRINTF("\tTh1.Ui8Value=%d\r\n",ConfiguratedVirtualSensorsArray[SensorNum]->Th1.Ui8Value);
+       if(ConfiguratedVirtualSensorsArray[SensorNum]->ThsUsageType<TH_LESS) {
+        SMARTAG2_PRINTF("\tTh2.Ui8Value=%d\r\n",ConfiguratedVirtualSensorsArray[SensorNum]->Th2.Ui8Value);
+      }
+      
     } else if(ConfiguratedVirtualSensorsArray[SensorNum] == &AllVirtualSensorsArray[STTS22H_VS_ID]) {
       
       DataBuf32 = STTS22H_VS_ID |
-        (((uint32_t)AllVirtualSensorsArray[STTS22H_VS_ID].ThsUsageType)<<3) |
-          (((uint32_t)AllVirtualSensorsArray[STTS22H_VS_ID].Th1.Ui16Value)<<(3+2)) |
-            (((uint32_t)AllVirtualSensorsArray[STTS22H_VS_ID].Th2.Ui16Value)<<(3+2+9));
+        (((uint32_t)AllVirtualSensorsArray[STTS22H_VS_ID].ThsUsageType)<<4) |
+          (((uint32_t)AllVirtualSensorsArray[STTS22H_VS_ID].Th1.Ui16Value)<<(4+2)) |
+            (((uint32_t)AllVirtualSensorsArray[STTS22H_VS_ID].Th2.Ui16Value)<<(4+2+9));
       if(BSP_NFCTAG_WriteData( BSP_NFCTAG_INSTANCE, (uint8_t *)&DataBuf32, LogDefinition.LastSamplePointer, 4)!=NFCTAG_OK){
         STNFC_Error_Handler(STNFC_WRITING_ERROR);
       }
@@ -1450,9 +1702,9 @@ static void SaveVirtualSensorsConfiguration(void)
     } else if(ConfiguratedVirtualSensorsArray[SensorNum] == &AllVirtualSensorsArray[LPS22DF_VS_ID]) {
       
       DataBuf32 = LPS22DF_VS_ID |
-        (((uint32_t)AllVirtualSensorsArray[LPS22DF_VS_ID].ThsUsageType)<<3) |
-          (((uint32_t)AllVirtualSensorsArray[LPS22DF_VS_ID].Th1.Ui16Value)<<(3+2)) |
-            (((uint32_t)AllVirtualSensorsArray[LPS22DF_VS_ID].Th2.Ui16Value)<<(3+2+11));
+        (((uint32_t)AllVirtualSensorsArray[LPS22DF_VS_ID].ThsUsageType)<<4) |
+          (((uint32_t)AllVirtualSensorsArray[LPS22DF_VS_ID].Th1.Ui16Value)<<(4+2)) |
+            (((uint32_t)AllVirtualSensorsArray[LPS22DF_VS_ID].Th2.Ui16Value)<<(4+2+11));
       if(BSP_NFCTAG_WriteData( BSP_NFCTAG_INSTANCE, (uint8_t *)&DataBuf32, LogDefinition.LastSamplePointer, 4)!=NFCTAG_OK){
         STNFC_Error_Handler(STNFC_WRITING_ERROR);
       }
@@ -1468,8 +1720,8 @@ static void SaveVirtualSensorsConfiguration(void)
     } else if(ConfiguratedVirtualSensorsArray[SensorNum] == &AllVirtualSensorsArray[VD6283_LUX_VS_ID]) {
       
       DataBuf32 = VD6283_LUX_VS_ID |
-        (((uint32_t)AllVirtualSensorsArray[VD6283_LUX_VS_ID].ThsUsageType)<<3) |
-          (((uint32_t)AllVirtualSensorsArray[VD6283_LUX_VS_ID].Th1.Ui32Value)<<(3+2));
+        (((uint32_t)AllVirtualSensorsArray[VD6283_LUX_VS_ID].ThsUsageType)<<4) |
+          (((uint32_t)AllVirtualSensorsArray[VD6283_LUX_VS_ID].Th1.Ui32Value)<<(4+2));
       if(BSP_NFCTAG_WriteData( BSP_NFCTAG_INSTANCE, (uint8_t *)&DataBuf32, LogDefinition.LastSamplePointer, 4)!=NFCTAG_OK){
         STNFC_Error_Handler(STNFC_WRITING_ERROR);
       }
@@ -1482,8 +1734,8 @@ static void SaveVirtualSensorsConfiguration(void)
     } else if(ConfiguratedVirtualSensorsArray[SensorNum] == &AllVirtualSensorsArray[LSM6DSOX32_VS_ID]) {
       
       DataBuf32 = LSM6DSOX32_VS_ID |
-        (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_VS_ID].ThsUsageType)<<3) |
-          (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Th1.Ui16Value)<<(3+2));
+        (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_VS_ID].ThsUsageType)<<4) |
+          (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_VS_ID].Th1.Ui16Value)<<(4+2));
       if(BSP_NFCTAG_WriteData( BSP_NFCTAG_INSTANCE, (uint8_t *)&DataBuf32, LogDefinition.LastSamplePointer, 4)!=NFCTAG_OK){
         STNFC_Error_Handler(STNFC_WRITING_ERROR);
       }
@@ -1496,9 +1748,9 @@ static void SaveVirtualSensorsConfiguration(void)
     } else if(ConfiguratedVirtualSensorsArray[SensorNum] == &AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID]) {
       
       DataBuf32 = LSM6DSOX32_6D_VS_ID |
-        (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].ThsUsageType)<<3) |
-          (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].Th1.Ui8Value)<<(3+2)) |
-            (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].Th2.Ui8Value)<<(3+2+8));
+        (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].ThsUsageType)<<4) |
+          (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].Th1.Ui8Value)<<(4+2)) |
+            (((uint32_t)AllVirtualSensorsArray[LSM6DSOX32_6D_VS_ID].Th2.Ui8Value)<<(4+2+8));
       if(BSP_NFCTAG_WriteData( BSP_NFCTAG_INSTANCE, (uint8_t *)&DataBuf32, LogDefinition.LastSamplePointer, 4)!=NFCTAG_OK){
         STNFC_Error_Handler(STNFC_WRITING_ERROR);
       }
@@ -1603,6 +1855,18 @@ static void MEMS_Sensors_ReadData(void)
     /* Compare with Ths and Update the Max/Min Sample Value */
     STNFC_ComputeMaxMinCompareTHsUi16t(&AllVirtualSensorsArray[LPS22DF_VS_ID],&LogDefinition,&hrtc);
     
+#ifdef SMARTAG2_DONT_SAVE_EQUAL_SAMPLES
+    if(AllVirtualSensorsArray[LPS22DF_VS_ID].SampleDeltaDateTime!=0) {
+      static uint16_t LastSendValue=0xDEAD;
+      if(AllVirtualSensorsArray[LPS22DF_VS_ID].Sample.Ui16Value==LastSendValue) {
+        SMARTAG2_PRINTF("\tSkip this LPS22DF Value\r\n");
+        AllVirtualSensorsArray[LPS22DF_VS_ID].SampleDeltaDateTime=0;
+      } else {
+        LastSendValue = AllVirtualSensorsArray[LPS22DF_VS_ID].Sample.Ui16Value;
+      }
+    }
+#endif /* SMARTAG2_DONT_SAVE_EQUAL_SAMPLES */
+    
     if(AllVirtualSensorsArray[LPS22DF_VS_ID].SampleDeltaDateTime!=0) {
 #ifdef SMARTAG2_VERBOSE_PRINTF
       SMARTAG2_PRINTF("\tSave LPS22DF=%d\r\n", AllVirtualSensorsArray[LPS22DF_VS_ID].Sample.Ui16Value);
@@ -1611,7 +1875,7 @@ static void MEMS_Sensors_ReadData(void)
 #endif /* SMARTAG2_VERBOSE_PRINTF */
       
       DataBuf32 = LPS22DF_VS_ID |
-        (((uint32_t)AllVirtualSensorsArray[LPS22DF_VS_ID].SampleDeltaDateTime)<<3);
+        (((uint32_t)AllVirtualSensorsArray[LPS22DF_VS_ID].SampleDeltaDateTime)<<4);
       if(BSP_NFCTAG_WriteData( BSP_NFCTAG_INSTANCE, (uint8_t *)&DataBuf32, LogDefinition.LastSamplePointer, 4)!=NFCTAG_OK){
         STNFC_Error_Handler(STNFC_WRITING_ERROR);
       }
@@ -1623,11 +1887,11 @@ static void MEMS_Sensors_ReadData(void)
       }
       LogDefinition.LastSamplePointer+=4;
       
-      /* Update Sample Counter and Last Sample Pointer */
-      UpdateLastSamplePointerAndSampleCounter(&LogDefinition);
-      
       /* Increment the new Sample Counter until the end of the Tag */
       NfcType5_UpdateSampleCounter(&LogDefinition,8);
+     
+      /* Update Sample Counter and Last Sample Pointer */
+      UpdateLastSamplePointerAndSampleCounter(&LogDefinition);
       
       AllVirtualSensorsArray[LPS22DF_VS_ID].SampleDeltaDateTime=0;
     }
@@ -1682,6 +1946,18 @@ static void MEMS_Sensors_ReadData(void)
     MCR_STNFC_CompareWithLimits(Ui16,AllVirtualSensorsArray[STTS22H_VS_ID],ValueToCheck);
     /* Compare with Ths and Update the Max/Min Sample Value */
     STNFC_ComputeMaxMinCompareTHsUi16t(&AllVirtualSensorsArray[STTS22H_VS_ID],&LogDefinition,&hrtc);
+
+#ifdef SMARTAG2_DONT_SAVE_EQUAL_SAMPLES
+    if(AllVirtualSensorsArray[STTS22H_VS_ID].SampleDeltaDateTime!=0) {
+      static uint16_t LastSendValue=0xDEAD;
+      if(AllVirtualSensorsArray[STTS22H_VS_ID].Sample.Ui16Value==LastSendValue) {
+        SMARTAG2_PRINTF("\tSkip this STS22H Value\r\n");
+        AllVirtualSensorsArray[STTS22H_VS_ID].SampleDeltaDateTime=0;
+      } else {
+        LastSendValue = AllVirtualSensorsArray[STTS22H_VS_ID].Sample.Ui16Value;
+      }
+    }
+#endif /* SMARTAG2_DONT_SAVE_EQUAL_SAMPLES */
     
     if(AllVirtualSensorsArray[STTS22H_VS_ID].SampleDeltaDateTime!=0) { 
 #ifdef SMARTAG2_VERBOSE_PRINTF
@@ -1691,7 +1967,7 @@ static void MEMS_Sensors_ReadData(void)
 #endif /* SMARTAG2_VERBOSE_PRINTF */
       
       DataBuf32 = STTS22H_VS_ID |
-        (((uint32_t)AllVirtualSensorsArray[STTS22H_VS_ID].SampleDeltaDateTime)<<3);
+        (((uint32_t)AllVirtualSensorsArray[STTS22H_VS_ID].SampleDeltaDateTime)<<4);
 
       if(BSP_NFCTAG_WriteData( BSP_NFCTAG_INSTANCE, (uint8_t *)&DataBuf32, LogDefinition.LastSamplePointer, 4)!=NFCTAG_OK){
         STNFC_Error_Handler(STNFC_WRITING_ERROR);
@@ -1704,11 +1980,11 @@ static void MEMS_Sensors_ReadData(void)
       }
       LogDefinition.LastSamplePointer+=4;
       
-      /* Update Sample Counter and Last Sample Pointer */
-      UpdateLastSamplePointerAndSampleCounter(&LogDefinition);
-      
       /* Increment the new Sample Counter until the end of the Tag */
       NfcType5_UpdateSampleCounter(&LogDefinition,8);
+     
+      /* Update Sample Counter and Last Sample Pointer */
+      UpdateLastSamplePointerAndSampleCounter(&LogDefinition);
       
       AllVirtualSensorsArray[STTS22H_VS_ID].SampleDeltaDateTime=0;
     }
@@ -1791,6 +2067,18 @@ static void MEMS_Sensors_ReadData(void)
       /* Compare with Ths and Update the Max/Min Sample Value */
       STNFC_ComputeMaxMinCompareTHsUi32t(&AllVirtualSensorsArray[VD6283_LUX_VS_ID],&LogDefinition,&hrtc);
       
+#ifdef SMARTAG2_DONT_SAVE_EQUAL_SAMPLES
+    if(AllVirtualSensorsArray[VD6283_LUX_VS_ID].SampleDeltaDateTime!=0) {
+      static uint32_t LastSendValue=0xDEADBEEF;
+      if(AllVirtualSensorsArray[VD6283_LUX_VS_ID].Sample.Ui32Value==LastSendValue) {
+        SMARTAG2_PRINTF("\tSkip this VD6283 Lux Value\r\n");
+        AllVirtualSensorsArray[VD6283_LUX_VS_ID].SampleDeltaDateTime=0;
+      } else {
+        LastSendValue = AllVirtualSensorsArray[VD6283_LUX_VS_ID].Sample.Ui32Value;
+      }
+    }
+#endif /* SMARTAG2_DONT_SAVE_EQUAL_SAMPLES */
+      
       if(AllVirtualSensorsArray[VD6283_LUX_VS_ID].SampleDeltaDateTime!=0) {
 #ifdef SMARTAG2_VERBOSE_PRINTF
         SMARTAG2_PRINTF("\tSave VD6283 KLux=%f\r\n", VD6283_LUX_CODED_TO_SAMPLE(AllVirtualSensorsArray[VD6283_LUX_VS_ID].Sample.Ui32Value));
@@ -1799,7 +2087,7 @@ static void MEMS_Sensors_ReadData(void)
 #endif /* SMARTAG2_VERBOSE_PRINTF */
         
         DataBuf32 = VD6283_LUX_VS_ID |
-          (((uint32_t)AllVirtualSensorsArray[VD6283_LUX_VS_ID].SampleDeltaDateTime)<<3);
+          (((uint32_t)AllVirtualSensorsArray[VD6283_LUX_VS_ID].SampleDeltaDateTime)<<4);
         if(BSP_NFCTAG_WriteData( BSP_NFCTAG_INSTANCE, (uint8_t *)&DataBuf32, LogDefinition.LastSamplePointer, 4)!=NFCTAG_OK){
           STNFC_Error_Handler(STNFC_WRITING_ERROR);
         }
@@ -1811,11 +2099,11 @@ static void MEMS_Sensors_ReadData(void)
         }
         LogDefinition.LastSamplePointer+=4;
         
-        /* Update Sample Counter and Last Sample Pointer */
-        UpdateLastSamplePointerAndSampleCounter(&LogDefinition);
-        
         /* Increment the new Sample Counter until the end of the Tag */
         NfcType5_UpdateSampleCounter(&LogDefinition,8);
+     
+        /* Update Sample Counter and Last Sample Pointer */
+        UpdateLastSamplePointerAndSampleCounter(&LogDefinition);
         
         AllVirtualSensorsArray[VD6283_LUX_VS_ID].SampleDeltaDateTime=0;
       }
@@ -1852,7 +2140,7 @@ static void MEMS_Sensors_ReadData(void)
     BSP_LIGHT_SENSOR_DeInit(0);
   }
   
-   if((AllVirtualSensorsArray[VD6283_CCT_VS_ID].Enable) | 
+   if((AllVirtualSensorsArray[VD6283_LUX_VS_ID].Enable) | 
       (AllVirtualSensorsArray[VD6283_CCT_VS_ID].Enable) | 
       (AllVirtualSensorsArray[STTS22H_VS_ID].Enable) | 
       (AllVirtualSensorsArray[LPS22DF_VS_ID].Enable)) {

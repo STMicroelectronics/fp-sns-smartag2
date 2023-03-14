@@ -59,7 +59,7 @@ STM32Cube packages:
 
 STEVAL-SMARTAG1:
 
-  - STEVAL-SMARTAG2 v1.0.0
+  - STEVAL-SMARTAG2 v1.1.0
   
 ### <b>How to use it?</b>
 

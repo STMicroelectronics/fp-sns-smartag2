@@ -37,6 +37,20 @@ int32_t BSP_MOTION_SENSOR_Read_Register(uint32_t Instance, uint8_t Reg, uint8_t 
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      if (LIS2DUXS12_Read_Reg(MotionCompObj[Instance], Reg, Data) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
 #if (USE_MOTION_SENSOR_H3LIS331DL_0 == 1)
     case H3LIS331DL_0:
       if (H3LIS331DL_Read_Reg(MotionCompObj[Instance], Reg, Data) != BSP_ERROR_NONE)
@@ -84,6 +98,20 @@ int32_t BSP_MOTION_SENSOR_Write_Register(uint32_t Instance, uint8_t Reg, uint8_t
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      if (LIS2DUXS12_Write_Reg(MotionCompObj[Instance], Reg, Data) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
 #if (USE_MOTION_SENSOR_H3LIS331DL_0 == 1)
     case H3LIS331DL_0:
       if (H3LIS331DL_Write_Reg(MotionCompObj[Instance], Reg, Data) != BSP_ERROR_NONE)
@@ -131,6 +159,27 @@ int32_t BSP_MOTION_SENSOR_Get_DRDY_Status(uint32_t Instance, uint32_t Function, 
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      if ((Function & MOTION_ACCELERO) == MOTION_ACCELERO)
+      {
+        if (LIS2DUXS12_ACC_Get_DRDY_Status(MotionCompObj[Instance], Status) != BSP_ERROR_NONE)
+        {
+          ret = BSP_ERROR_COMPONENT_FAILURE;
+        }
+        else
+        {
+          ret = BSP_ERROR_NONE;
+        }
+      }
+      else
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -151,6 +200,13 @@ int32_t BSP_MOTION_SENSOR_Enable_Free_Fall_Detection(uint32_t Instance, BSP_MOTI
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -170,6 +226,13 @@ int32_t BSP_MOTION_SENSOR_Disable_Free_Fall_Detection(uint32_t Instance)
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -190,6 +253,13 @@ int32_t BSP_MOTION_SENSOR_Set_Free_Fall_Threshold(uint32_t Instance, uint8_t Thr
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -210,6 +280,13 @@ int32_t BSP_MOTION_SENSOR_Set_Free_Fall_Duration(uint32_t Instance, uint8_t Dura
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -229,6 +306,13 @@ int32_t BSP_MOTION_SENSOR_Enable_Pedometer(uint32_t Instance)
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -248,6 +332,13 @@ int32_t BSP_MOTION_SENSOR_Disable_Pedometer(uint32_t Instance)
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -268,6 +359,13 @@ int32_t BSP_MOTION_SENSOR_Set_Pedometer_Threshold(uint32_t Instance, uint8_t Thr
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -287,6 +385,13 @@ int32_t BSP_MOTION_SENSOR_Reset_Step_Counter(uint32_t Instance)
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -307,6 +412,13 @@ int32_t BSP_MOTION_SENSOR_Get_Step_Count(uint32_t Instance, uint16_t *StepCount)
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -327,6 +439,13 @@ int32_t BSP_MOTION_SENSOR_Enable_Single_Tap_Detection(uint32_t Instance, BSP_MOT
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -346,6 +465,13 @@ int32_t BSP_MOTION_SENSOR_Disable_Single_Tap_Detection(uint32_t Instance)
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -366,6 +492,13 @@ int32_t BSP_MOTION_SENSOR_Enable_Double_Tap_Detection(uint32_t Instance, BSP_MOT
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -385,6 +518,13 @@ int32_t BSP_MOTION_SENSOR_Disable_Double_Tap_Detection(uint32_t Instance)
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -405,6 +545,13 @@ int32_t BSP_MOTION_SENSOR_Set_Tap_Threshold(uint32_t Instance, uint8_t Threshold
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -425,6 +572,13 @@ int32_t BSP_MOTION_SENSOR_Set_Tap_Shock_Time(uint32_t Instance, uint8_t Time)
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -445,6 +599,13 @@ int32_t BSP_MOTION_SENSOR_Set_Tap_Quiet_Time(uint32_t Instance, uint8_t Time)
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -465,6 +626,13 @@ int32_t BSP_MOTION_SENSOR_Set_Tap_Duration_Time(uint32_t Instance, uint8_t Time)
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -485,6 +653,13 @@ int32_t BSP_MOTION_SENSOR_Enable_Tilt_Detection(uint32_t Instance, BSP_MOTION_SE
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -504,6 +679,13 @@ int32_t BSP_MOTION_SENSOR_Disable_Tilt_Detection(uint32_t Instance)
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -538,6 +720,20 @@ int32_t BSP_MOTION_SENSOR_Enable_Wake_Up_Detection(uint32_t Instance, BSP_MOTION
       }
       break;
 #endif
+      
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      /* For LIS2DUXS12 the Wake Up event can be routed only on INT1 pin */
+      if (LIS2DUXS12_ACC_Enable_Wake_Up_Detection(MotionCompObj[Instance], (LIS2DUXS12_SensorIntPin_t) IntPin) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
 
     default:
       ret = BSP_ERROR_WRONG_PARAM;
@@ -562,6 +758,19 @@ int32_t BSP_MOTION_SENSOR_Disable_Wake_Up_Detection(uint32_t Instance)
 #if (USE_MOTION_SENSOR_LSM6DSO32X_0 == 1)
     case LSM6DSO32X_0:
       if (LSM6DSO32X_ACC_Disable_Wake_Up_Detection(MotionCompObj[Instance]) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+      
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      if (LIS2DUXS12_ACC_Disable_Wake_Up_Detection(MotionCompObj[Instance]) != BSP_ERROR_NONE)
       {
         ret = BSP_ERROR_COMPONENT_FAILURE;
       }
@@ -605,6 +814,19 @@ int32_t BSP_MOTION_SENSOR_Set_Wake_Up_Threshold(uint32_t Instance, uint8_t Thres
       }
       break;
 #endif
+      
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      if (LIS2DUXS12_ACC_Set_Wake_Up_Threshold(MotionCompObj[Instance], Threshold) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
 
     default:
       ret = BSP_ERROR_WRONG_PARAM;
@@ -626,6 +848,20 @@ int32_t BSP_MOTION_SENSOR_Set_Wake_Up_Duration(uint32_t Instance, uint8_t Durati
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      if (LIS2DUXS12_ACC_Set_Wake_Up_Duration(MotionCompObj[Instance], Duration) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -646,6 +882,13 @@ int32_t BSP_MOTION_SENSOR_Enable_Inactivity_Detection(uint32_t Instance, BSP_MOT
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+       ret = BSP_ERROR_FEATURE_NOT_SUPPORTED;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -665,6 +908,21 @@ int32_t BSP_MOTION_SENSOR_Disable_Inactivity_Detection(uint32_t Instance)
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+//      if (LIS2DUXS12_ACC_Disable_Inactivity_Detection(MotionCompObj[Instance]) != BSP_ERROR_NONE)
+//      {
+//        ret = BSP_ERROR_COMPONENT_FAILURE;
+//      }
+//      else
+//      {
+//        ret = BSP_ERROR_NONE;
+//      }
+       ret = BSP_ERROR_FEATURE_NOT_SUPPORTED;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -685,6 +943,21 @@ int32_t BSP_MOTION_SENSOR_Set_Sleep_Duration(uint32_t Instance, uint8_t Duration
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+//      if (LIS2DUXS12_ACC_Set_Sleep_Duration(MotionCompObj[Instance], Duration) != BSP_ERROR_NONE)
+//      {
+//        ret = BSP_ERROR_COMPONENT_FAILURE;
+//      }
+//      else
+//      {
+//        ret = BSP_ERROR_NONE;
+//      }
+       ret = BSP_ERROR_FEATURE_NOT_SUPPORTED;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -710,6 +983,20 @@ int32_t BSP_MOTION_SENSOR_Enable_6D_Orientation(uint32_t Instance, BSP_MOTION_SE
     case LSM6DSO32X_0:
       /* For LSM6DSO32X the 6D Orientation event can be routed for INT1 pin and INT2 pin */
       if (LSM6DSO32X_ACC_Enable_6D_Orientation(MotionCompObj[Instance], (LSM6DSO32X_SensorIntPin_t) IntPin) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      /* For LIS2DUXS12 the 6D Orientation event can be routed only on INT1 pin */
+      if (LIS2DUXS12_ACC_Enable_6D_Orientation(MotionCompObj[Instance], (LIS2DUXS12_SensorIntPin_t) IntPin) != BSP_ERROR_NONE)
       {
         ret = BSP_ERROR_COMPONENT_FAILURE;
       }
@@ -752,6 +1039,19 @@ int32_t BSP_MOTION_SENSOR_Disable_6D_Orientation(uint32_t Instance)
       }
       break;
 #endif
+      
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      if (LIS2DUXS12_ACC_Disable_6D_Orientation(MotionCompObj[Instance]) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
 
     default:
       ret = BSP_ERROR_WRONG_PARAM;
@@ -773,6 +1073,20 @@ int32_t BSP_MOTION_SENSOR_Set_6D_Orientation_Threshold(uint32_t Instance, uint8_
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      if (LIS2DUXS12_ACC_Set_6D_Orientation_Threshold(MotionCompObj[Instance], Threshold) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -797,6 +1111,19 @@ int32_t BSP_MOTION_SENSOR_Get_6D_Orientation_XL(uint32_t Instance, uint8_t *xl)
 #if (USE_MOTION_SENSOR_LSM6DSO32X_0 == 1)
     case LSM6DSO32X_0:
       if (LSM6DSO32X_ACC_Get_6D_Orientation_XL(MotionCompObj[Instance], xl) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+      
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      if (LIS2DUXS12_ACC_Get_6D_Orientation_XL(MotionCompObj[Instance], xl) != BSP_ERROR_NONE)
       {
         ret = BSP_ERROR_COMPONENT_FAILURE;
       }
@@ -840,6 +1167,19 @@ int32_t BSP_MOTION_SENSOR_Get_6D_Orientation_XH(uint32_t Instance, uint8_t *xh)
       }
       break;
 #endif
+      
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      if (LIS2DUXS12_ACC_Get_6D_Orientation_XH(MotionCompObj[Instance], xh) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
 
     default:
       ret = BSP_ERROR_WRONG_PARAM;
@@ -864,6 +1204,19 @@ int32_t BSP_MOTION_SENSOR_Get_6D_Orientation_YL(uint32_t Instance, uint8_t *yl)
 #if (USE_MOTION_SENSOR_LSM6DSO32X_0 == 1)
     case LSM6DSO32X_0:
       if (LSM6DSO32X_ACC_Get_6D_Orientation_YL(MotionCompObj[Instance], yl) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+      
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      if (LIS2DUXS12_ACC_Get_6D_Orientation_YL(MotionCompObj[Instance], yl) != BSP_ERROR_NONE)
       {
         ret = BSP_ERROR_COMPONENT_FAILURE;
       }
@@ -906,6 +1259,19 @@ int32_t BSP_MOTION_SENSOR_Get_6D_Orientation_YH(uint32_t Instance, uint8_t *yh)
       }
       break;
 #endif
+      
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      if (LIS2DUXS12_ACC_Get_6D_Orientation_YH(MotionCompObj[Instance], yh) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
 
     default:
       ret = BSP_ERROR_WRONG_PARAM;
@@ -939,6 +1305,19 @@ int32_t BSP_MOTION_SENSOR_Get_6D_Orientation_ZL(uint32_t Instance, uint8_t *zl)
       }
       break;
 #endif
+      
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      if (LIS2DUXS12_ACC_Get_6D_Orientation_ZL(MotionCompObj[Instance], zl) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
 
     default:
       ret = BSP_ERROR_WRONG_PARAM;
@@ -963,6 +1342,19 @@ int32_t BSP_MOTION_SENSOR_Get_6D_Orientation_ZH(uint32_t Instance, uint8_t *zh)
 #if (USE_MOTION_SENSOR_LSM6DSO32X_0 == 1)
     case LSM6DSO32X_0:
       if (LSM6DSO32X_ACC_Get_6D_Orientation_ZH(MotionCompObj[Instance], zh) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+      
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      if (LIS2DUXS12_ACC_Get_6D_Orientation_ZH(MotionCompObj[Instance], zh) != BSP_ERROR_NONE)
       {
         ret = BSP_ERROR_COMPONENT_FAILURE;
       }
@@ -1008,6 +1400,20 @@ int32_t BSP_MOTION_SENSOR_Get_Event_Status(uint32_t Instance, BSP_MOTION_SENSOR_
       break;
 #endif
 
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      /* The second cast (void *) is added to bypass Misra R11.3 rule */
+      if (LIS2DUXS12_ACC_Get_Event_Status(MotionCompObj[Instance], (LIS2DUXS12_Event_Status_t *)(void *)Status) != BSP_ERROR_NONE)
+      {
+        ret = BSP_ERROR_COMPONENT_FAILURE;
+      }
+      else
+      {
+        ret = BSP_ERROR_NONE;
+      }
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -1029,7 +1435,7 @@ int32_t BSP_MOTION_SENSOR_FIFO_Get_Num_Samples(uint32_t Instance, uint16_t *NumS
   switch (Instance)
   {
 
-#if (USE_MOTION_SENSOR_LSM6DSO32X_0 == 1)
+    #if (USE_MOTION_SENSOR_LSM6DSO32X_0 == 1)
     case LSM6DSO32X_0:
       if (LSM6DSO32X_FIFO_Get_Num_Samples(MotionCompObj[Instance], NumSamples) != BSP_ERROR_NONE)
       {
@@ -1039,6 +1445,20 @@ int32_t BSP_MOTION_SENSOR_FIFO_Get_Num_Samples(uint32_t Instance, uint16_t *NumS
       {
         ret = BSP_ERROR_NONE;
       }
+      break;
+#endif
+      
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+//      if (LIS2DUXS12_FIFO_Get_Num_Samples(MotionCompObj[Instance], NumSamples) != BSP_ERROR_NONE)
+//      {
+//        ret = BSP_ERROR_COMPONENT_FAILURE;
+//      }
+//      else
+//      {
+//        ret = BSP_ERROR_NONE;
+//      }
+       ret = BSP_ERROR_FEATURE_NOT_SUPPORTED;
       break;
 #endif
 
@@ -1062,6 +1482,13 @@ int32_t BSP_MOTION_SENSOR_FIFO_Get_Full_Status(uint32_t Instance, uint8_t *Statu
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -1083,6 +1510,13 @@ int32_t BSP_MOTION_SENSOR_FIFO_Set_Decimation(uint32_t Instance, uint32_t Functi
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -1103,6 +1537,13 @@ int32_t BSP_MOTION_SENSOR_FIFO_Set_ODR_Value(uint32_t Instance, float Odr)
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -1123,6 +1564,13 @@ int32_t BSP_MOTION_SENSOR_FIFO_Set_INT1_FIFO_Full(uint32_t Instance, uint8_t Sta
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -1143,6 +1591,13 @@ int32_t BSP_MOTION_SENSOR_FIFO_Set_Watermark_Level(uint32_t Instance, uint16_t W
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -1163,6 +1618,13 @@ int32_t BSP_MOTION_SENSOR_FIFO_Set_Stop_On_Fth(uint32_t Instance, uint8_t Status
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -1196,6 +1658,20 @@ int32_t BSP_MOTION_SENSOR_FIFO_Set_Mode(uint32_t Instance, uint8_t Mode)
       }
       break;
 #endif
+      
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+//      if (LIS2DUXS12_FIFO_Set_Mode(MotionCompObj[Instance], Mode) != BSP_ERROR_NONE)
+//      {
+//        ret = BSP_ERROR_COMPONENT_FAILURE;
+//      }
+//      else
+//      {
+//        ret = BSP_ERROR_NONE;
+//      }
+       ret = BSP_ERROR_FEATURE_NOT_SUPPORTED;
+      break;
+#endif
 
     default:
       ret = BSP_ERROR_WRONG_PARAM;
@@ -1217,6 +1693,13 @@ int32_t BSP_MOTION_SENSOR_FIFO_Get_Pattern(uint32_t Instance, uint16_t *Pattern)
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -1238,6 +1721,13 @@ int32_t BSP_MOTION_SENSOR_FIFO_Get_Axis(uint32_t Instance, uint32_t Function, in
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -1290,6 +1780,12 @@ int32_t BSP_MOTION_SENSOR_FIFO_Set_BDR(uint32_t Instance, uint32_t Function, flo
       }
       break;
 #endif
+      
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
 
     default:
       ret = BSP_ERROR_WRONG_PARAM;
@@ -1311,6 +1807,13 @@ int32_t BSP_MOTION_SENSOR_FIFO_Get_Tag(uint32_t Instance, uint8_t *Tag)
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
@@ -1332,6 +1835,13 @@ int32_t BSP_MOTION_SENSOR_FIFO_Get_Axes(uint32_t Instance, uint32_t Function, BS
 
   switch (Instance)
   {
+
+#if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
+    case LIS2DUXS12_0:
+      ret = BSP_ERROR_COMPONENT_FAILURE;
+      break;
+#endif
+
     default:
       ret = BSP_ERROR_WRONG_PARAM;
       break;
