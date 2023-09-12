@@ -18,7 +18,6 @@ The FP-SNS-SMARTAG2 contains the following projects:
 
 The package supports battery operated use cases.
 
-
 **FP-SNS-SMARTAG2 software features**:
 
 - Complete firmware to access data from an IoT node with dynamic NFC tag, environmental, motion and ambient light sensors 
@@ -34,7 +33,7 @@ The package supports battery operated use cases.
 This firmware package includes Components Device Drivers, Board Support Package and example application for the STMicroelectronics:
 
 - STEVAL-SMARTAG2 (SmarTag2) evaluation board that contains the following components:
-  - MEMS sensor devices (LPS22DF, STTS22H, LIS2DUX12, H3LIS331DL, LSM6DSO32X)
+  - MEMS sensor devices (LPS22DF, STTS22H, LIS2DUXS12, H3LIS331DL, LSM6DSO32X)
   - ambient light sensors(VD6283TX)
   - dynamic NFC tag (ST25DV64KC)
 
@@ -60,7 +59,7 @@ Here is the list of references to user documents:
 
 -   IAR Embedded Workbench for ARM (EWARM) toolchain V9.20.1 + STLink/V2
 -   RealView Microcontroller Development Kit (MDK-ARM) toolchain V5.37.0 + ST-LINK/V2
--   Integrated Development Environment for STM32 (STM32CubeIDE) V1.11.0 + ST-LINK
+-   Integrated Development Environment for STM32 (STM32CubeIDE) V1.12.0 + ST-LINK
 	
 ## Dependencies 
 

@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * @file    st25dvxxkc.h
-  * @author  MMY Application Team
-  * @brief   This file provides set of driver functions to manage communication 
+  * @file           : st25dvxxkc.h
+  * @author         : MMY Ecosystem Team
+  * @brief          : This file provides set of driver functions to manage communication 
   * @brief   between MCU and ST25DVxxKC chip 
   ******************************************************************************
   * @attention
@@ -171,6 +171,16 @@ typedef enum
 } ST25DVxxKC_CURRENT_MSG_E;
 
 /**
+ * @brief  ST25DVxxKC I2C Slave modes enumerator definition
+ */
+typedef enum
+{
+  ST25DVXXKC_SLAVE_MODE_NORMAL = 0,
+  ST25DVXXKC_SLAVE_MODE_RFOFF,
+  ST25DVXXKC_SLAVE_MODE_RFON  
+} ST25DVxxKC_SLAVE_MODE_E;
+
+/**
  * @brief  ST25DVxxKC EH Ctrl structure definition
  */
 typedef struct
@@ -293,6 +303,7 @@ typedef struct
   ST25DVxxKC_Write_Func   Write;
   ST25DVxxKC_Read_Func    Read;
   ST25DVxxKC_GetTick_Func GetTick;
+  uint16_t                DeviceAddress;
 } ST25DVxxKC_IO_t;
 
 /**
@@ -340,13 +351,23 @@ typedef struct
 #define NULL      (void *) 0
 #endif
 
-/** @brief I2C address to be used for ST25DVxxKC Data accesses. */
-#define ST25DVXXKC_ADDR_DATA_I2C                 (uint8_t)0xA6
-/** @brief I2C address to be used for ST25DVxxKC System accesses. */
-#define ST25DVXXKC_ADDR_SYST_I2C                 (uint8_t)0xAE
+/** @brief Default I2C address to be used for ST25DVxxKC Data accesses. */
+#define ST25DVXXKC_ADDR_DATA_I2C                (uint8_t)0xA6
+/** @brief System memory bit on I2C slave device address */
+#define ST25DVXXKC_ADDR_SYSTEMMEMORY_BIT_I2C    (uint8_t)0x08
+/** @brief RF Switch bit on I2C slave device address */
+#define ST25DVXXKC_ADDR_RFSWITCH_BIT_I2C        (uint8_t)0x08
+/** @brief System memory bit on I2C slave device address */
+#define ST25DVXXKC_ADDR_MODE_BIT_I2C            (uint8_t)0x04
 
-/** @brief I2C Time out (ms), min value : (Max write bytes) / (Internal page write) * tw   (256/4)*5. */
-#define ST25DVXXKC_WRITE_TIMEOUT                 320U
+#define ST25DVXXKC_ADDR_DEVICECODE_SHIFT        (uint8_t)(4)
+#define ST25DVXXKC_ADDR_DEVICECODE_MASK         (uint8_t)0xF0
+#define ST25DVXXKC_ADDR_E0_SHIFT                (uint8_t)(1)
+#define ST25DVXXKC_ADDR_E0_MASK                 (uint8_t)0x02
+
+
+/** @brief I2C Time out (ms), max value : tw + tw * (Max write bytes) / (Internal page write) :  5 + 5*(256/16). */
+#define ST25DVXXKC_WRITE_TIMEOUT                 85U
 
 /** @brief Size of the ST25DVxxKC write buffer. */
 #define ST25DVXXKC_MAX_WRITE_BYTE                256U
@@ -367,7 +388,7 @@ extern ST25DVxxKC_Drv_t St25Dvxxkc_Drv;
 /* Exported functions ------------------------------------------------------- */
 extern int32_t ST25DVxxKC_ReadRegister(const ST25DVxxKC_Object_t *const pObj, uint8_t *const pData, const uint16_t TarAddr, \
                                                                                       const uint16_t NbByte);
-extern int32_t ST25DVxxKC_WriteRegister(const ST25DVxxKC_Object_t *const pObj, const uint8_t *const pData, \
+extern int32_t ST25DVxxKC_WriteRegister(ST25DVxxKC_Object_t *const pObj, const uint8_t *const pData, \
                                                                         const uint16_t TarAddr, const uint16_t NbByte);
 int32_t ST25DVxxKC_RegisterBusIO(ST25DVxxKC_Object_t *const pObj, const ST25DVxxKC_IO_t *const pIO);
 int32_t ST25DVxxKC_ReadICRev(const ST25DVxxKC_Object_t *const pObj, uint8_t *const pICRev);
@@ -386,8 +407,8 @@ int32_t ST25DVxxKC_WriteLockCCFile(const ST25DVxxKC_Object_t *const pObj, const 
                                                           const ST25DVxxKC_LOCK_STATUS_E LockCCFile);
 int32_t ST25DVxxKC_ReadLockCFG(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC_LOCK_STATUS_E *const pLockCfg);
 int32_t ST25DVxxKC_WriteLockCFG(const ST25DVxxKC_Object_t *const pObj, const ST25DVxxKC_LOCK_STATUS_E LockCfg);
-int32_t ST25DVxxKC_PresentI2CPassword(const ST25DVxxKC_Object_t *const pObj, const ST25DVxxKC_PASSWD_t PassWord);
-int32_t ST25DVxxKC_WriteI2CPassword(const ST25DVxxKC_Object_t *const pObj, const ST25DVxxKC_PASSWD_t PassWord);
+int32_t ST25DVxxKC_PresentI2CPassword(ST25DVxxKC_Object_t *const pObj, const ST25DVxxKC_PASSWD_t PassWord);
+int32_t ST25DVxxKC_WriteI2CPassword(ST25DVxxKC_Object_t *const pObj, const ST25DVxxKC_PASSWD_t PassWord);
 int32_t ST25DVxxKC_ReadRFZxSS(const ST25DVxxKC_Object_t *const pObj, const ST25DVxxKC_PROTECTION_ZONE_E Zone, \
                                                           ST25DVxxKC_RF_PROT_ZONE_t *const pRfprotZone);
 int32_t ST25DVxxKC_WriteRFZxSS(const ST25DVxxKC_Object_t *const pObj, const ST25DVxxKC_PROTECTION_ZONE_E Zone, \
@@ -440,11 +461,18 @@ int32_t ST25DVxxKC_ResetRFDisable_Dyn(const ST25DVxxKC_Object_t *const pObj);
 int32_t ST25DVxxKC_GetRFSleep_Dyn(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC_EN_STATUS_E *const pRFSleep);
 int32_t ST25DVxxKC_SetRFSleep_Dyn(const ST25DVxxKC_Object_t *const pObj);
 int32_t ST25DVxxKC_ResetRFSleep_Dyn(const ST25DVxxKC_Object_t *const pObj);
+int32_t ST25DVxxKC_GetRFOff_Dyn(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC_EN_STATUS_E *const pRFSleep);
+int32_t ST25DVxxKC_SetRFOff_Dyn(const ST25DVxxKC_Object_t *const pObj);
+int32_t ST25DVxxKC_ResetRFOff_Dyn(const ST25DVxxKC_Object_t *const pObj);
 int32_t ST25DVxxKC_ReadMBCtrl_Dyn(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC_MB_CTRL_DYN_STATUS_t *const pCtrlStatus);
 int32_t ST25DVxxKC_GetMBEN_Dyn(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC_EN_STATUS_E *const pMBEN);
 int32_t ST25DVxxKC_SetMBEN_Dyn(const ST25DVxxKC_Object_t *const pObj);
 int32_t ST25DVxxKC_ResetMBEN_Dyn(const ST25DVxxKC_Object_t *const pObj);
 int32_t ST25DVxxKC_ReadMBLength_Dyn(const ST25DVxxKC_Object_t *const pObj, uint8_t *const pMBLength);
+int32_t ST25DVxxKC_WriteI2CSlaveMode(const ST25DVxxKC_Object_t *const pObj, const ST25DVxxKC_SLAVE_MODE_E slave_mode);
+int32_t ST25DVxxKC_ReadI2CSlaveMode(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC_SLAVE_MODE_E *const slave_mode);
+int32_t ST25DVxxKC_WriteI2CSlaveAddress(const ST25DVxxKC_Object_t *const pObj, const uint8_t deviceCode, const uint8_t E0);
+int32_t ST25DVxxKC_ReadI2CSlaveAddress(const ST25DVxxKC_Object_t *const pObj, uint8_t *const deviceCode, uint8_t *const E0);
 
 /**
   * @}
@@ -459,5 +487,4 @@ int32_t ST25DVxxKC_ReadMBLength_Dyn(const ST25DVxxKC_Object_t *const pObj, uint8
   }
 #endif
 #endif /* ST25DVXXKC_H */
-
 

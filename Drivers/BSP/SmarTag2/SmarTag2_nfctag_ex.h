@@ -31,11 +31,19 @@
 #include "stm32l4xx_hal.h"
 #include "st25dvxxkc.h"
 
-/* Defines -------------------------------------------------------------------*/
-   
-/* Exported Variables --------------------------------------------------------*/
-
 /* Exported Prototypes -------------------------------------------------------*/
+int32_t BSP_NFCTAG_LPD_Init( void );
+int32_t BSP_NFCTAG_LPD_DeInit( void );
+int32_t BSP_NFCTAG_LPD_ReadPin( void );
+int32_t BSP_NFCTAG_LPD_On( void );
+int32_t BSP_NFCTAG_LPD_Off( void );
+int32_t BSP_NFCTAG_LPD_Toggle( void );
+
+int32_t BSP_NFCTAG_GPO_Init( void );
+int32_t BSP_NFCTAG_GPO_DeInit( void );
+int32_t BSP_NFCTAG_GPO_ReadPin( void );
+void BSP_GPO_IRQHandler(void);
+
 extern int32_t BSP_NFCTAG_ChangeI2CPassword(uint32_t MsbPasswd,uint32_t LsbPasswd);
 extern int32_t BSP_NFCTAG_SetICPasswordProtectionZone1(uint32_t MsbPasswd,uint32_t LsbPasswd,ST25DVxxKC_PROTECTION_CONF_E ProtectionLevel);
 extern int32_t BSP_NFCTAG_EnableRFWritingPasswordProtectionZone1(uint32_t MsbPasswd,uint32_t LsbPasswd);

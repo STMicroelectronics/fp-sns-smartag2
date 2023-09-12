@@ -13,5 +13,5 @@
 | BSP Components st25dvxxkc							| STMicroelectronics   | BSD-3-Clause |
 | BSP SmarTag2		                     			| STMicroelectronics   | BSD-3-Clause |
 | ST25FTM Middleware                    			| STMicroelectronics   | SLA0051 |
-| STM32L4P5CG-SmarTag2 Examples Projects  		    | STMicroelectronics   | BSD-3-Clause |
-| STM32L4P5CG-SmarTag2 Application Projects  		| STMicroelectronics   | SLA0094 |
+| STEVAL-SMARTAG2 Examples Projects					| STMicroelectronics   | BSD-3-Clause |
+| STEVAL-SMARTAG2 Application Projects				| STMicroelectronics   | SLA0094 |

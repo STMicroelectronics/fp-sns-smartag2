@@ -21,10 +21,12 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "SmarTag2_env_sensors.h"
-#include "SmarTag2.h"
 
+/* Exported Variables --------------------------------------------------------*/
 extern void *EnvCompObj[ENV_INSTANCES_NBR]; /* This "redundant" line is here to fulfil MISRA C-2012 rule 8.4 */
 void *EnvCompObj[ENV_INSTANCES_NBR];
+
+/* Private function prototypes -----------------------------------------------*/
 
 /* We define a jump table in order to get the correct index from the desired function. */
 /* This table should have a size equal to the maximum value of a function plus 1.      */
@@ -40,6 +42,28 @@ static int32_t STTS22H_0_Probe(uint32_t Functions);
 #if (USE_ENV_SENSOR_LPS22DF_0 == 1)
 static int32_t LPS22DF_0_Probe(uint32_t Functions);
 #endif
+
+/**
+  * @brief  This function power off ambient light sensor and environmental sensors on board the SMARTAG2
+  * @param  None
+  * @retval None
+  */
+void BSP_ENV_SENSOR_PowerOff(void)
+{
+  HAL_GPIO_WritePin(VDD_AMB_MCU_GPIO_Port, VDD_AMB_MCU_Pin, GPIO_PIN_RESET);
+  HAL_Delay(20);
+}
+
+/**
+  * @brief  This function power on ambient light sensor and environmental sensors on board the SMARTAG2
+  * @param  None
+  * @retval None
+  */
+void BSP_ENV_SENSOR_PowerOn(void)
+{
+  HAL_GPIO_WritePin(VDD_AMB_MCU_GPIO_Port, VDD_AMB_MCU_Pin, GPIO_PIN_SET);
+  HAL_Delay(20);
+}
 
 /**
  * @brief  Initializes the environmental sensor

@@ -21,7 +21,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "SmarTag2_nfctag.h"
-#include "SmarTag2.h"
 
 /** @addtogroup BSP
  * @{
@@ -36,12 +35,23 @@
  */
 /* Private typedef -----------------------------------------------------------*/
 /* Private defines -----------------------------------------------------------*/
+   
+/** @defgroup SMARTAG2_NFCTAG_VDD_EEP_PIN SMARTAG2 NFCTAG VDD EEP MCU PIN
+ * @{
+ */
+#define NFCTAG_VDD_EEP_Pin GPIO_PIN_3
+#define NFCTAG_VDD_EEP_GPIO_Port GPIOA
+/**
+ * @}
+ */
+   
 /** @defgroup SMARTAG2_NFCTAG_Private_Defines
  * @{
  */
 #ifndef NULL
 #define NULL      (void *) 0
 #endif
+
 /**
  * @}
  */
@@ -50,8 +60,7 @@
 /** @brief I2C Time out (ms), min value : (Max write bytes) / (Internal page write) * tw   (256/4)*5. */
 #define ST25DV_WRITE_TIMEOUT                   320U 
 
-/* Private variables ---------------------------------------------------------*/ 
-/* Global variables ----------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
 /** @defgroup SMARTAG2_NFCTAG_Private_Variables
  * @{
  */
@@ -70,6 +79,28 @@ static int32_t NFCTAG_ConvertStatus(const HAL_StatusTypeDef status);
 /** @defgroup SMARTAG2_NFCTAG_Public_Functions
  * @{
  */
+
+/**
+  * @brief  This function power off nfctag component on board the SMARTAG2
+  * @param  None
+  * @retval None
+  */
+void BSP_NFCTAG_EEP_PowerOff(void)
+{
+  HAL_GPIO_WritePin( NFCTAG_VDD_EEP_GPIO_Port, NFCTAG_VDD_EEP_Pin, GPIO_PIN_RESET );
+  HAL_Delay(20);
+}
+
+/**
+  * @brief  This function power on nfctag component on board the SMARTAG2
+  * @param  None
+  * @retval None
+  */
+void BSP_NFCTAG_EEP_PowerOn(void)
+{
+  HAL_GPIO_WritePin( NFCTAG_VDD_EEP_GPIO_Port, NFCTAG_VDD_EEP_Pin, GPIO_PIN_SET );
+  HAL_Delay(20);
+}
 
 
 int32_t BSP_NFCTAG_Init (uint32_t Instance)
@@ -1103,7 +1134,7 @@ static int32_t BSP_NFCTAG_MemWrite( uint16_t DevAddr, uint16_t Addr, const uint8
   else
   {
     /* Check if Write was NACK */
-    if( BSP_I2C3_IsNacked() == I2CANSW_NACK )
+    if( HANDLE_I2C.ErrorCode == HAL_I2C_ERROR_AF )
     {
       ret = NFCTAG_NACK;
     }

@@ -56,6 +56,10 @@
 /** @defgroup SMARTAG2_NFCTAG_Exported_Functions
   * @{
   */
+
+void BSP_NFCTAG_EEP_PowerOff(void);
+void BSP_NFCTAG_EEP_PowerOn(void);
+
 int32_t BSP_NFCTAG_Init( uint32_t Instance );
 void BSP_NFCTAG_DeInit( uint32_t Instance );
 int32_t BSP_NFCTAG_isInitialized( uint32_t Instance );

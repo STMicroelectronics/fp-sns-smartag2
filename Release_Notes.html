@@ -70,15 +70,194 @@
 <div class="col-sm-12 col-lg-8">
 <h1 id="update-history">Update History</h1>
 <div class="collapse">
-<input type="checkbox" id="collapse-section3" checked aria-hidden="true"> <label for="collapse-section3" aria-hidden="true">V1.1.0 / 22-February-2023</label>
+<input type="checkbox" id="collapse-section4" checked aria-hidden="true"> <label for="collapse-section4" aria-hidden="true">V1.2.0 / 30-May-2023</label>
 <div>
 <h2 id="main-changes">Main Changes</h2>
 <h3 id="maintenance-release">Maintenance release</h3>
 <ul>
+<li>C-code maintenance tonew of the HAL, drivers and middlewares version</li>
+<li>Code generation from STM32CubeMX application by .ioc file for each platform and for each applications and examples</li>
+</ul>
+<h2 id="contents">Contents</h2>
+<p>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</p>
+<table>
+<caption>Documentation<br />
+</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">FP-SNS-SMARTAG2_STEVAL-SMARTAG2 Doxygen documentation</td>
+<td style="text-align: left;">1.2.0 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Documentation\FP-SNS-SMARTAG2_STM32L4P5CG-SmarTag2.chm">CHM</a></td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Projects</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">STM32L4P5CG-SmarTag2/Examples/OneShot</td>
+<td style="text-align: left;">1.2.0 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Projects/STEVAL-SMARTAG2/Examples/OneShot/readme.html">Readme</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STM32L4P5CG-SmarTag2/Examples/SimpleBootLoader</td>
+<td style="text-align: left;">1.2.0 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Projects/STEVAL-SMARTAG2/Examples/SimpleBootLoader/readme.html">Readme</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">STM32L4P5CG-SmarTag2/Examples/SmarTag2</td>
+<td style="text-align: left;">1.2.0 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Projects/STEVAL-SMARTAG2/Examples/SmarTag2/readme.html">Readme</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STM32L4P5CG-SmarTag2/Applications/FirmwareUpdate</td>
+<td style="text-align: left;">1.2.0 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Projects/STEVAL-SMARTAG2/Applications/FirmwareUpdate/readme.html">Readme</a></td>
+</tr>
+</tbody>
+</table>
+<p><br />
+</p>
+<table>
+<caption>Drivers<br />
+</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">STM32L4xx CMSIS</td>
+<td style="text-align: left;">1.7.2</td>
+<td style="text-align: left;"><a href="Drivers\CMSIS\Device\ST\STM32L4xx\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STM32L4xx HAL</td>
+<td style="text-align: left;">1.13.3 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Drivers\STM32L4xx_HAL_Driver\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BSP STEVAL-SMARTAG2</td>
+<td style="text-align: left;">1.2.0 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Drivers\BSP\SmarTag2\Release_Notes.html">release notes</a></td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Components<br />
+</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">lps22df</td>
+<td style="text-align: left;">1.2.0</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\lps22df\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stts22h</td>
+<td style="text-align: left;">1.4.0</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\stts22h\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">lsm6dso32x</td>
+<td style="text-align: left;">1.2.0</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\lsm6dso32x\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">h3lis331dl</td>
+<td style="text-align: left;">1.3.0</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\h3lis331dl\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">lis2duxs12</td>
+<td style="text-align: left;">1.1.0</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\lis2duxs12\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">vd6283tx</td>
+<td style="text-align: left;">1.0.2</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\vd6283tx\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">st25dvxxkc</td>
+<td style="text-align: left;">2.0.1</td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\st25dvxxkc\Release_Notes.html">release notes</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="known-limitations">Known Limitations</h2>
+<ul>
+<li>OneShot example can be used only for the version B of the evaluation board (STEVAL$SMARTAG2B)</li>
+<li>For FirmwareUpdate application, after code generation from STM32CubeMX software before building:
+<ul>
+<li>Replaced in the folder Src the file system_stm32f4xx.c</li>
+<li>for IAR and STM32CubeIDE replace the linker scripts with the scripts in the folder LinkerScript</li>
+<li>for Keil, open the “Options for Target” and in the tab “Target” set start= 0x8002000 and sixe= 0x7E000.</li>
+</ul></li>
+</ul>
+<h2 id="known-issues">Known Issues</h2>
+<ul>
+<li>None</li>
+</ul>
+<h2 id="warning">Warning</h2>
+<ul>
+<li>Whether you are generating your source code through STM32CubeMX tool, consider to deeply read the getting started guide within the folder documentation</li>
+</ul>
+<h2 id="development-toolchains-and-compilers">Development Toolchains and Compilers</h2>
+<ul>
+<li>IAR Embedded Workbench for ARM (EWARM) toolchain V9.20.1 + STLink/V2</li>
+<li>RealView Microcontroller Development Kit (MDK-ARM) toolchain V5.37.0 + ST-LINK/V2</li>
+<li>Integrated Development Environment for STM32 (STM32CubeIDE) V1.12.0 + ST-LINK</li>
+</ul>
+<h2 id="supported-devices-and-boards">Supported Devices and Boards</h2>
+<ul>
+<li>STEVAL-SMARTAG2 NFC dynamic tag sensor and processing node evaluation board [<a href="https://www.st.com/en/evaluation-tools/steval-smartag2.html">STEVAL-SMARTAG2</a>]</li>
+</ul>
+<h2 id="backward-compatibility">Backward Compatibility</h2>
+<p>None</p>
+<h2 id="dependencies">Dependencies</h2>
+<p>This software release is compatible with:</p>
+<ul>
+<li><a href="https://play.google.com/store/apps/details?id=com.st.assetTracking"><strong>ST Asset Tracking Android application</strong></a> V3.1.0 (or higher)</li>
+<li><a href="https://apps.apple.com/it/app/st-asset-tracking/id1483734401"><strong>ST Asset Tracking iOS application</strong></a> V3.1.0 (or higher)</li>
+<li><a href="https://play.google.com/store/apps/details?id=com.st.smartTag"><strong>ST NFC Sensor Android application</strong></a> V1.3.0 (or higher)</li>
+<li><a href="https://apps.apple.com/it/app/st-nfc-sensor/id1377274569"><strong>ST NFC Sensor iOS application</strong></a> V1.3.0 (or higher)</li>
+</ul>
+</div>
+</div>
+<div class="collapse">
+<input type="checkbox" id="collapse-section3" aria-hidden="true"> <label for="collapse-section3" aria-hidden="true">V1.1.0 / 22-February-2023</label>
+<div>
+<h2 id="main-changes-1">Main Changes</h2>
+<h3 id="maintenance-release-1">Maintenance release</h3>
+<ul>
 <li>Added OneShot Example</li>
 <li>Added Support for lis2duxs12</li>
 </ul>
-<h2 id="contents">Contents</h2>
+<h2 id="contents-1">Contents</h2>
 <p>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</p>
 <table>
 <caption>Documentation<br />
@@ -208,27 +387,27 @@
 </tr>
 </tbody>
 </table>
-<h2 id="known-limitations">Known Limitations</h2>
+<h2 id="known-limitations-1">Known Limitations</h2>
 <ul>
 <li>OneShot example can be used only for the version B of the evaluation board (STEVAL$SMARTAG2B)</li>
 </ul>
-<h2 id="known-issues">Known Issues</h2>
+<h2 id="known-issues-1">Known Issues</h2>
 <ul>
 <li>None</li>
 </ul>
-<h2 id="development-toolchains-and-compilers">Development Toolchains and Compilers</h2>
+<h2 id="development-toolchains-and-compilers-1">Development Toolchains and Compilers</h2>
 <ul>
 <li>IAR Embedded Workbench for ARM (EWARM) toolchain V9.20.1 + STLink/V2</li>
 <li>RealView Microcontroller Development Kit (MDK-ARM) toolchain V5.37.0 + ST-LINK/V2</li>
 <li>Integrated Development Environment for STM32 (STM32CubeIDE) V1.11.0 + ST-LINK</li>
 </ul>
-<h2 id="supported-devices-and-boards">Supported Devices and Boards</h2>
+<h2 id="supported-devices-and-boards-1">Supported Devices and Boards</h2>
 <ul>
 <li>STEVAL-SMARTAG2 NFC dynamic tag sensor and processing node evaluation board [<a href="https://www.st.com/en/evaluation-tools/steval-smartag2.html">STEVAL-SMARTAG2</a>]</li>
 </ul>
-<h2 id="backward-compatibility">Backward Compatibility</h2>
+<h2 id="backward-compatibility-1">Backward Compatibility</h2>
 <p>None</p>
-<h2 id="dependencies">Dependencies</h2>
+<h2 id="dependencies-1">Dependencies</h2>
 <p>This software release is compatible with:</p>
 <ul>
 <li><a href="https://play.google.com/store/apps/details?id=com.st.assetTracking"><strong>ST Asset Tracking Android application</strong></a> V3.1.0 (or higher)</li>
@@ -241,12 +420,12 @@
 <div class="collapse">
 <input type="checkbox" id="collapse-section3" aria-hidden="true"> <label for="collapse-section3" aria-hidden="true">V1.0.2 / 30-January-2023</label>
 <div>
-<h2 id="main-changes-1">Main Changes</h2>
-<h3 id="maintenance-release-1">Maintenance release</h3>
+<h2 id="main-changes-2">Main Changes</h2>
+<h3 id="maintenance-release-2">Maintenance release</h3>
 <ul>
 <li>Added capability to Fix incorrect CC file</li>
 </ul>
-<h2 id="contents-1">Contents</h2>
+<h2 id="contents-2">Contents</h2>
 <p>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</p>
 <table>
 <caption>Documentation<br />
@@ -366,27 +545,27 @@
 </tr>
 </tbody>
 </table>
-<h2 id="known-limitations-1">Known Limitations</h2>
+<h2 id="known-limitations-2">Known Limitations</h2>
 <ul>
 <li>None</li>
 </ul>
-<h2 id="known-issues-1">Known Issues</h2>
+<h2 id="known-issues-2">Known Issues</h2>
 <ul>
 <li>None</li>
 </ul>
-<h2 id="development-toolchains-and-compilers-1">Development Toolchains and Compilers</h2>
+<h2 id="development-toolchains-and-compilers-2">Development Toolchains and Compilers</h2>
 <ul>
 <li>IAR Embedded Workbench for ARM (EWARM) toolchain V9.20.1 + STLink/V2</li>
 <li>RealView Microcontroller Development Kit (MDK-ARM) toolchain V5.37.0 + ST-LINK/V2</li>
 <li>Integrated Development Environment for STM32 (STM32CubeIDE) V1.11.0 + ST-LINK</li>
 </ul>
-<h2 id="supported-devices-and-boards-1">Supported Devices and Boards</h2>
+<h2 id="supported-devices-and-boards-2">Supported Devices and Boards</h2>
 <ul>
 <li>STEVAL-SMARTAG2 NFC dynamic tag sensor and processing node evaluation board [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/st25-nfc-rfid-eval-tools/st25-nfc-rfid-eval-boards/steval-SMARTAG2.html">STEVAL-SMARTAG2</a>]</li>
 </ul>
-<h2 id="backward-compatibility-1">Backward Compatibility</h2>
+<h2 id="backward-compatibility-2">Backward Compatibility</h2>
 <p>None</p>
-<h2 id="dependencies-1">Dependencies</h2>
+<h2 id="dependencies-2">Dependencies</h2>
 <p>This software release is compatible with:</p>
 <ul>
 <li><a href="https://play.google.com/store/apps/details?id=com.st.assetTracking"><strong>ST Asset Tracking Android application</strong></a> V3.1.0 (or higher)</li>
@@ -399,13 +578,13 @@
 <div class="collapse">
 <input type="checkbox" id="collapse-section2" aria-hidden="true"> <label for="collapse-section2" aria-hidden="true">V1.0.1 / 05-December-2022</label>
 <div>
-<h2 id="main-changes-2">Main Changes</h2>
-<h3 id="maintenance-release-2">Maintenance release</h3>
+<h2 id="main-changes-3">Main Changes</h2>
+<h3 id="maintenance-release-3">Maintenance release</h3>
 <ul>
 <li>Fixed a Bug for Epoch Time computation</li>
 <li>Added the capability to reset the Tag pressing 3 times (in 3 seconds) the User Button</li>
 </ul>
-<h2 id="contents-2">Contents</h2>
+<h2 id="contents-3">Contents</h2>
 <p>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</p>
 <table>
 <caption>Documentation<br />
@@ -525,27 +704,27 @@
 </tr>
 </tbody>
 </table>
-<h2 id="known-limitations-2">Known Limitations</h2>
+<h2 id="known-limitations-3">Known Limitations</h2>
 <ul>
 <li>None</li>
 </ul>
-<h2 id="known-issues-2">Known Issues</h2>
+<h2 id="known-issues-3">Known Issues</h2>
 <ul>
 <li>None</li>
 </ul>
-<h2 id="development-toolchains-and-compilers-2">Development Toolchains and Compilers</h2>
+<h2 id="development-toolchains-and-compilers-3">Development Toolchains and Compilers</h2>
 <ul>
 <li>IAR Embedded Workbench for ARM (EWARM) toolchain V9.20.1 + STLink/V2</li>
 <li>RealView Microcontroller Development Kit (MDK-ARM) toolchain V5.37.0 + ST-LINK/V2</li>
 <li>Integrated Development Environment for STM32 (STM32CubeIDE) V1.10.1 + ST-LINK</li>
 </ul>
-<h2 id="supported-devices-and-boards-2">Supported Devices and Boards</h2>
+<h2 id="supported-devices-and-boards-3">Supported Devices and Boards</h2>
 <ul>
 <li>STEVAL-SMARTAG2 NFC dynamic tag sensor and processing node evaluation board [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/st25-nfc-rfid-eval-tools/st25-nfc-rfid-eval-boards/steval-SMARTAG2.html">STEVAL-SMARTAG2</a>]</li>
 </ul>
-<h2 id="backward-compatibility-2">Backward Compatibility</h2>
+<h2 id="backward-compatibility-3">Backward Compatibility</h2>
 <p>None</p>
-<h2 id="dependencies-2">Dependencies</h2>
+<h2 id="dependencies-3">Dependencies</h2>
 <p>This software release is compatible with:</p>
 <ul>
 <li><a href="https://play.google.com/store/apps/details?id=com.st.assetTracking"><strong>ST Asset Tracking Android application</strong></a> V3.1.0 (or higher)</li>
@@ -558,12 +737,12 @@
 <div class="collapse">
 <input type="checkbox" id="collapse-section1" aria-hidden="true"> <label for="collapse-section1" aria-hidden="true">V1.0.0 / 02-September-2022</label>
 <div>
-<h2 id="main-changes-3">Main Changes</h2>
-<h3 id="maintenance-release-3">Maintenance release</h3>
+<h2 id="main-changes-4">Main Changes</h2>
+<h3 id="maintenance-release-4">Maintenance release</h3>
 <ul>
 <li>First Official Release</li>
 </ul>
-<h2 id="contents-3">Contents</h2>
+<h2 id="contents-4">Contents</h2>
 <p>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</p>
 <table>
 <caption>Documentation<br />
@@ -683,27 +862,27 @@
 </tr>
 </tbody>
 </table>
-<h2 id="known-limitations-3">Known Limitations</h2>
+<h2 id="known-limitations-4">Known Limitations</h2>
 <ul>
 <li>None</li>
 </ul>
-<h2 id="known-issues-3">Known Issues</h2>
+<h2 id="known-issues-4">Known Issues</h2>
 <ul>
 <li>None</li>
 </ul>
-<h2 id="development-toolchains-and-compilers-3">Development Toolchains and Compilers</h2>
+<h2 id="development-toolchains-and-compilers-4">Development Toolchains and Compilers</h2>
 <ul>
 <li>IAR Embedded Workbench for ARM (EWARM) toolchain V9.20.1 + STLink/V2</li>
 <li>RealView Microcontroller Development Kit (MDK-ARM) toolchain V5.37.0 + ST-LINK/V2</li>
 <li>Integrated Development Environment for STM32 (STM32CubeIDE) V1.10.1 + ST-LINK</li>
 </ul>
-<h2 id="supported-devices-and-boards-3">Supported Devices and Boards</h2>
+<h2 id="supported-devices-and-boards-4">Supported Devices and Boards</h2>
 <ul>
 <li>STEVAL-SMARTAG2 NFC dynamic tag sensor and processing node evaluation board [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/st25-nfc-rfid-eval-tools/st25-nfc-rfid-eval-boards/steval-SMARTAG2.html">STEVAL-SMARTAG2</a>]</li>
 </ul>
-<h2 id="backward-compatibility-3">Backward Compatibility</h2>
+<h2 id="backward-compatibility-4">Backward Compatibility</h2>
 <p>None</p>
-<h2 id="dependencies-3">Dependencies</h2>
+<h2 id="dependencies-4">Dependencies</h2>
 <p>This software release is compatible with:</p>
 <ul>
 <li><a href="https://play.google.com/store/apps/details?id=com.st.assetTracking"><strong>ST Asset Tracking Android application</strong></a> V3.1.0 (or higher)</li>

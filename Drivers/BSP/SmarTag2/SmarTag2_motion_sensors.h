@@ -35,6 +35,14 @@ extern "C" {
 #ifndef USE_MOTION_SENSOR_LIS2DUXS12_0
 #define USE_MOTION_SENSOR_LIS2DUXS12_0         1
 #endif
+  
+#ifndef USE_MOTION_SENSOR_H3LIS331DL_0
+#define USE_MOTION_SENSOR_H3LIS331DL_0         0
+#endif
+  
+#ifndef USE_MOTION_SENSOR_LSM6DSO32X_0
+#define USE_MOTION_SENSOR_LSM6DSO32X_0         0
+#endif
 
 #if (USE_MOTION_SENSOR_LIS2DUXS12_0 == 1)
 #include "lis2duxs12.h"
@@ -59,6 +67,15 @@ extern "C" {
 #if (USE_MOTION_SENSOR_LSM6DSO32X_0 == 1)
 #define LSM6DSO32X_0 (USE_MOTION_SENSOR_LIS2DUXS12_0 + USE_MOTION_SENSOR_H3LIS331DL_0)
 #endif
+
+/** @defgroup SMARTAG2_VDD_ACC_MCU_PIN SMARTAG2 VDD ACC MCU PIN
+ * @{
+ */
+#define VDD_ACC_MCU_Pin         GPIO_PIN_15
+#define VDD_ACC_MCU_GPIO_Port   GPIOB
+/**
+ * @}
+ */
 
 typedef struct
 {
@@ -110,6 +127,9 @@ typedef struct
 #if (MOTION_INSTANCES_NBR == 0)
 #error "No motion sensor instance has been selected"
 #endif
+
+void BSP_MOTION_SENSOR_PowerOff(void);
+void BSP_MOTION_SENSOR_PowerOn(void);
 
 int32_t BSP_MOTION_SENSOR_Init(uint32_t Instance, uint32_t Functions);
 int32_t BSP_MOTION_SENSOR_DeInit(uint32_t Instance);

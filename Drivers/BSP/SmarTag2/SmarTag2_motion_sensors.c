@@ -20,10 +20,12 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "SmarTag2_motion_sensors.h"
-#include "SmarTag2.h"
 
+/* Exported Variables --------------------------------------------------------*/
 extern void *MotionCompObj[MOTION_INSTANCES_NBR]; /* This "redundant" line is here to fulfil MISRA C-2012 rule 8.4 */
 void *MotionCompObj[MOTION_INSTANCES_NBR];
+
+/* Private function prototypes -----------------------------------------------*/
 
 /* We define a jump table in order to get the correct index from the desired function. */
 /* This table should have a size equal to the maximum value of a function plus 1.      */
@@ -62,6 +64,60 @@ static int32_t BSP_LSM6DSO32X_0_DeInit(void);
 static int32_t BSP_LSM6DSO32X_0_WriteReg(uint16_t Addr, uint16_t Reg, uint8_t *pdata, uint16_t len);
 static int32_t BSP_LSM6DSO32X_0_ReadReg(uint16_t Addr, uint16_t Reg, uint8_t *pdata, uint16_t len);
 #endif
+
+/**
+  * @brief  This function power off accelerometer sensors on board the SMARTAG2
+  * @param  None
+  * @retval None
+  */
+void BSP_MOTION_SENSOR_PowerOff(void)
+{
+    HAL_GPIO_DeInit(BSP_LSM6DSO32X_0_CS_PORT, BSP_LSM6DSO32X_0_CS_PIN);
+    HAL_GPIO_DeInit(BSP_LIS2DUXS12_0_CS_PORT, BSP_LIS2DUXS12_0_CS_PIN);
+    HAL_GPIO_DeInit(BSP_H3LIS331DL_0_CS_PORT, BSP_H3LIS331DL_0_CS_PIN);
+    HAL_SPI_DeInit(&HANDLE_SPI);
+    HAL_GPIO_WritePin(VDD_ACC_MCU_GPIO_Port, VDD_ACC_MCU_Pin, GPIO_PIN_RESET);
+  HAL_Delay(20);
+}
+
+/**
+  * @brief  This function power on accelerometer sensors on board the SMARTAG2
+  * @param  None
+  * @retval None
+  */
+void BSP_MOTION_SENSOR_PowerOn(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = { 0 };
+
+    HAL_GPIO_DeInit(BSP_LSM6DSO32X_0_CS_PORT, BSP_LSM6DSO32X_0_CS_PIN);
+    HAL_GPIO_DeInit(BSP_LIS2DUXS12_0_CS_PORT, BSP_LIS2DUXS12_0_CS_PIN);
+    HAL_GPIO_DeInit(BSP_H3LIS331DL_0_CS_PORT, BSP_H3LIS331DL_0_CS_PIN);
+
+    HAL_GPIO_WritePin(BSP_LSM6DSO32X_0_CS_PORT, BSP_LSM6DSO32X_0_CS_PIN, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(BSP_LIS2DUXS12_0_CS_PORT, BSP_LIS2DUXS12_0_CS_PIN, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(BSP_H3LIS331DL_0_CS_PORT, BSP_H3LIS331DL_0_CS_PIN, GPIO_PIN_SET);
+
+    HAL_GPIO_WritePin(VDD_ACC_MCU_GPIO_Port, VDD_ACC_MCU_Pin, GPIO_PIN_SET);
+
+    GPIO_InitStruct.Pin = BSP_LSM6DSO32X_0_CS_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(BSP_LSM6DSO32X_0_CS_PORT, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = BSP_LIS2DUXS12_0_CS_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(BSP_LIS2DUXS12_0_CS_PORT, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = BSP_H3LIS331DL_0_CS_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(BSP_H3LIS331DL_0_CS_PORT, &GPIO_InitStruct);
+  HAL_Delay(20);
+}
 
 /**
   * @brief  Initializes the motion sensors

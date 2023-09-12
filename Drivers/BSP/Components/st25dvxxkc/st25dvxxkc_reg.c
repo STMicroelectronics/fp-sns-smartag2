@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * @file    st25dvxxkc_reg.c
-  * @author  MMY Ecosystem Team
-  * @brief   ST25DVXXKC register file
+  * @file           : st25dvxxkc_reg.c
+  * @author         : MMY Ecosystem Team
+  * @brief          : ST25DVXXKC register file
   ******************************************************************************
   * @attention
   *
@@ -34,14 +34,6 @@
 /* Private function prototypes -----------------------------------------------*/
 int32_t ST25DVxxKC_ReadReg(const ST25DVxxKC_Ctx_t *const ctx, const uint16_t Reg, uint8_t *const Data, const uint16_t len);
 int32_t ST25DVxxKC_WriteReg(const ST25DVxxKC_Ctx_t *const ctx, const uint16_t Reg, const uint8_t *const Data, const uint16_t len);
-int32_t ST25DVxxKC_GetI2CCFG_DEVICECODE(const ST25DVxxKC_Ctx_t *const ctx, uint8_t *const value);
-int32_t ST25DVxxKC_SetI2CCFG_DEVICECODE(const ST25DVxxKC_Ctx_t *const ctx, const uint8_t *const value);
-int32_t ST25DVxxKC_GetI2CCFG_E0(const ST25DVxxKC_Ctx_t *const ctx, uint8_t *const value);
-int32_t ST25DVxxKC_SetI2CCFG_E0(const ST25DVxxKC_Ctx_t *const ctx, const uint8_t *const value);
-int32_t ST25DVxxKC_GetI2CCFG_RFSWITCHOFF(const ST25DVxxKC_Ctx_t *const ctx, uint8_t *const value);
-int32_t ST25DVxxKC_SetI2CCFG_RFSWITCHOFF(const ST25DVxxKC_Ctx_t *const ctx, const uint8_t *const value);
-int32_t ST25DVxxKC_GetRF_MNGT_DYN_RFOFF(const ST25DVxxKC_Ctx_t *const ctx, uint8_t *const value);
-int32_t ST25DVxxKC_SetRF_MNGT_DYN_RFOFF(const ST25DVxxKC_Ctx_t *const ctx, const uint8_t *const value);
 /* Public functions ---------------------------------------------------------*/
 /**
  * @brief  Read register from component
@@ -268,86 +260,86 @@ int32_t ST25DVxxKC_GetLOCKAFI(const ST25DVxxKC_Ctx_t *const ctx, uint8_t *const 
 }
 
 /**
- * @brief  Read MB_MODE_RW register
+ * @brief  Read FTM_RW register
  * @param[in] ctx structure containing context driver
  * @param[out] value data pointer to store register content
  * @return 0 in case of success, an error code otherwise
  */
-int32_t ST25DVxxKC_GetMB_MODE_RW(const ST25DVxxKC_Ctx_t *const ctx, uint8_t *const value)
+int32_t ST25DVxxKC_GetFTM_MBMODE(const ST25DVxxKC_Ctx_t *const ctx, uint8_t *const value)
 {
   int32_t ret;
   
-  ret = ST25DVxxKC_ReadReg(ctx, (ST25DVXXKC_MB_REG), (uint8_t *)value, 1);
+  ret = ST25DVxxKC_ReadReg(ctx, (ST25DVXXKC_FTM_REG), (uint8_t *)value, 1);
   if(ret == 0)
   {  
-    *value &= (ST25DVXXKC_MB_MODE_RW_MASK);
-    *value = *value >> (ST25DVXXKC_MB_MODE_RW_SHIFT);
+    *value &= (ST25DVXXKC_FTM_MBMODE_MASK);
+    *value = *value >> (ST25DVXXKC_FTM_MBMODE_SHIFT);
   }
   
   return ret;
 }
 
 /**
- * @brief  Write MB_MODE_RW register
+ * @brief  Write FTM_RW register
  * @param[in] ctx structure containing context driver
  * @param[in] value data pointer to write to register
  * @return 0 in case of success, an error code otherwise
  */
-int32_t ST25DVxxKC_SetMB_MODE_RW(const ST25DVxxKC_Ctx_t *const ctx, const uint8_t *const value)
+int32_t ST25DVxxKC_SetFTM_MBMODE(const ST25DVxxKC_Ctx_t *const ctx, const uint8_t *const value)
 {
   uint8_t reg_value;
   int32_t ret;
   
-  ret = ST25DVxxKC_ReadReg(ctx, (ST25DVXXKC_MB_REG), &reg_value, 1);
+  ret = ST25DVxxKC_ReadReg(ctx, (ST25DVXXKC_FTM_REG), &reg_value, 1);
   if(ret == 0)
   {
-    reg_value = ((*value << (ST25DVXXKC_MB_MODE_RW_SHIFT)) & (ST25DVXXKC_MB_MODE_RW_MASK)) |
-                  (reg_value & ~(ST25DVXXKC_MB_MODE_RW_MASK));
+    reg_value = ((*value << (ST25DVXXKC_FTM_MBMODE_SHIFT)) & (ST25DVXXKC_FTM_MBMODE_MASK)) |
+                  (reg_value & ~(ST25DVXXKC_FTM_MBMODE_MASK));
 
-    ret = ST25DVxxKC_WriteReg(ctx, (ST25DVXXKC_MB_REG), &reg_value, 1);
+    ret = ST25DVxxKC_WriteReg(ctx, (ST25DVXXKC_FTM_REG), &reg_value, 1);
   }
   
   return ret;
 }
 
 /**
- * @brief  Read MB_WDG_DELAY register
+ * @brief  Read FTM register
  * @param[in] ctx structure containing context driver
  * @param[out] value data pointer to store register content
  * @return 0 in case of success, an error code otherwise
  */
-int32_t ST25DVxxKC_GetMB_WDG_DELAY(const ST25DVxxKC_Ctx_t *const ctx, uint8_t *const value)
+int32_t ST25DVxxKC_GetFTM_MBWDG(const ST25DVxxKC_Ctx_t *const ctx, uint8_t *const value)
 {
   int32_t ret;
   
-  ret = ST25DVxxKC_ReadReg(ctx, (ST25DVXXKC_MB_REG), (uint8_t *)value, 1);
+  ret = ST25DVxxKC_ReadReg(ctx, (ST25DVXXKC_FTM_REG), (uint8_t *)value, 1);
   if(ret == 0)
   {
-    *value &= (ST25DVXXKC_MB_WDG_DELAY_MASK);
-    *value = *value >> (ST25DVXXKC_MB_WDG_DELAY_RW_SHIFT);
+    *value &= (ST25DVXXKC_FTM_MBWDG_MASK);
+    *value = *value >> (ST25DVXXKC_FTM_MBWDG_SHIFT);
   }
   
   return ret;
 }
 
 /**
- * @brief  Write MB_WDG_DELAY register
+ * @brief  Write FTM register
  * @param[in] ctx structure containing context driver
  * @param[in] value data pointer to write to register
  * @return 0 in case of success, an error code otherwise
  */
-int32_t ST25DVxxKC_SetMB_WDG_DELAY(const ST25DVxxKC_Ctx_t *const ctx, const uint8_t *const value)
+int32_t ST25DVxxKC_SetFTM_MBWDG(const ST25DVxxKC_Ctx_t *const ctx, const uint8_t *const value)
 {
   uint8_t reg_value;
   int32_t ret;
   
-  ret = ST25DVxxKC_ReadReg(ctx, (ST25DVXXKC_MB_REG), &reg_value, 1);
+  ret = ST25DVxxKC_ReadReg(ctx, (ST25DVXXKC_FTM_REG), &reg_value, 1);
   if(ret == 0)
   {
-    reg_value = ((*value << (ST25DVXXKC_MB_WDG_DELAY_RW_SHIFT)) & (ST25DVXXKC_MB_WDG_DELAY_MASK)) |
-                  (reg_value & ~(ST25DVXXKC_MB_WDG_DELAY_MASK));
+    reg_value = ((*value << (ST25DVXXKC_FTM_MBWDG_SHIFT)) & (ST25DVXXKC_FTM_MBWDG_MASK)) |
+                  (reg_value & ~(ST25DVXXKC_FTM_MBWDG_MASK));
 
-    ret = ST25DVxxKC_WriteReg(ctx, (ST25DVXXKC_MB_REG), &reg_value, 1);
+    ret = ST25DVxxKC_WriteReg(ctx, (ST25DVXXKC_FTM_REG), &reg_value, 1);
   }
   
   return ret;
@@ -1299,16 +1291,7 @@ int32_t ST25DVxxKC_SetGPO_DYN_ALL(const ST25DVxxKC_Ctx_t *const ctx, const uint8
  */
 int32_t ST25DVxxKC_GetITTIME_DELAY(const ST25DVxxKC_Ctx_t *const ctx, uint8_t *const value)
 {
-  int32_t ret;
-  
-  ret = ST25DVxxKC_ReadReg(ctx, (ST25DVXXKC_GPO2_REG), (uint8_t *)value, 1);
-  if(ret == 0)
-  {
-    *value &= (ST25DVXXKC_GPO2_ITTIME_MASK);
-    *value = *value >> (ST25DVXXKC_GPO2_ITTIME_SHIFT);
-  }
-  
-  return ret;
+  return ST25DVxxKC_GetGPO2_ITTIME(ctx, value);
 }
 
 /**
@@ -1319,19 +1302,7 @@ int32_t ST25DVxxKC_GetITTIME_DELAY(const ST25DVxxKC_Ctx_t *const ctx, uint8_t *c
  */
 int32_t ST25DVxxKC_SetITTIME_DELAY(const ST25DVxxKC_Ctx_t *const ctx, const uint8_t *const value)
 {
-  uint8_t reg_value;
-  int32_t ret;
-  
-  ret = ST25DVxxKC_ReadReg(ctx, (ST25DVXXKC_GPO2_REG), &reg_value, 1);
-  if(ret == 0)
-  {
-    reg_value = ((*value << (ST25DVXXKC_GPO2_ITTIME_SHIFT)) & (ST25DVXXKC_GPO2_ITTIME_MASK)) |
-                  (reg_value & ~(ST25DVXXKC_GPO2_ITTIME_MASK));
-
-    ret = ST25DVxxKC_WriteReg(ctx, (ST25DVXXKC_GPO2_REG), &reg_value, 1);
-  }
-  
-  return ret;
+  return ST25DVxxKC_SetGPO2_ITTIME(ctx, value);
 }
 
 /**
@@ -2161,7 +2132,7 @@ int32_t ST25DVxxKC_GetRFA2SS_RWPROT(const ST25DVxxKC_Ctx_t *const ctx, uint8_t *
     *value = *value >> (ST25DVXXKC_RFA2SS_RWPROT_SHIFT);
   }
   
-  return NFCTAG_OK;
+  return ret;
 }
 
 /**
@@ -2881,5 +2852,4 @@ int32_t ST25DVxxKC_GetI2C_SSO_DYN_I2CSSO(const ST25DVxxKC_Ctx_t *const ctx, uint
 /**
   * @}
   */ 
-
 

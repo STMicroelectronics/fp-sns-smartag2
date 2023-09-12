@@ -23,7 +23,6 @@
 * */
 
 #include "Smartag2_light_sensor.h"
-#include "SmarTag2.h"
 
 /** @addtogroup BSP
   * @{
@@ -32,6 +31,7 @@
 /** @defgroup BSP_LIGHT_SENSOR LIGHT_SENSOR
   * @{
   */
+
 
 /** @defgroup BSP_LIGHT_SENSOR_Exported_Types Exported Types
   * @{
@@ -587,22 +587,22 @@ static int32_t vd6283tx_i2c_recover(void)
 
  
 
-  HAL_GPIO_WritePin(BUS_I2C1_SCL_GPIO_PORT, BUS_I2C1_SCL_GPIO_PIN, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(BUS_I2C1_SDA_GPIO_PORT, BUS_I2C1_SDA_GPIO_PIN, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(BUS_I2C_SCL_GPIO_PORT, BUS_I2C_SCL_GPIO_PIN, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(BUS_I2C_SDA_GPIO_PORT, BUS_I2C_SDA_GPIO_PIN, GPIO_PIN_SET);
 
   do
   {
     for (i = 0; i < 10U; i++)
     {
-      HAL_GPIO_WritePin(BUS_I2C1_SCL_GPIO_PORT, BUS_I2C1_SCL_GPIO_PIN, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(BUS_I2C_SCL_GPIO_PORT, BUS_I2C_SCL_GPIO_PIN, GPIO_PIN_RESET);
       HAL_Delay(1);
-      HAL_GPIO_WritePin(BUS_I2C1_SCL_GPIO_PORT, BUS_I2C1_SCL_GPIO_PIN, GPIO_PIN_SET);
+      HAL_GPIO_WritePin(BUS_I2C_SCL_GPIO_PORT, BUS_I2C_SCL_GPIO_PIN, GPIO_PIN_SET);
       HAL_Delay(1);
     }
     retry_cnt++;
-  } while ((HAL_GPIO_ReadPin(BUS_I2C1_SDA_GPIO_PORT, BUS_I2C1_SDA_GPIO_PIN) == GPIO_PIN_RESET) && (retry_cnt < 7U));
+  } while ((HAL_GPIO_ReadPin(BUS_I2C_SDA_GPIO_PORT, BUS_I2C_SDA_GPIO_PIN) == GPIO_PIN_RESET) && (retry_cnt < 7U));
 
-  if (HAL_GPIO_ReadPin(BUS_I2C1_SDA_GPIO_PORT, BUS_I2C1_SDA_GPIO_PIN) == GPIO_PIN_RESET)
+  if (HAL_GPIO_ReadPin(BUS_I2C_SDA_GPIO_PORT, BUS_I2C_SDA_GPIO_PIN) == GPIO_PIN_RESET)
   {
     /* We are still in a bad i2c state, return error */
     return BSP_ERROR_COMPONENT_FAILURE;

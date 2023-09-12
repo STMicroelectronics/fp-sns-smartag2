@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * @file    st25dvxxkc.c
-  * @author  MMY Application Team
-  * @brief   This file provides set of driver functions to manage communication 
+  * @file           : st25dvxxkc.c
+  * @author         : MMY Ecosystem Team
+  * @brief          : This file provides set of driver functions to manage communication 
   *          between BSP and ST25DVxxKC chip.
   ******************************************************************************
   * @attention
@@ -57,6 +57,7 @@ int32_t ST25DVxxKC_WriteData(const ST25DVxxKC_Object_t *const pObj, const uint8_
                                                                      const uint16_t TarAddr, const uint16_t NbByte);
 
 /* Global variables ---------------------------------------------------------*/
+
 /**
   * @brief    Standard NFC tag driver API for the ST25DVxxKC.
   * @details  Provides a generic way to access the ST25DVxxKC implementation of the NFC tag standard driver functions.
@@ -69,7 +70,7 @@ ST25DVxxKC_Drv_t St25Dvxxkc_Drv =
   ST25DVxxKC_GetGPOStatus,
   ST25DVxxKC_ConfigureGPO,
   ST25DVxxKC_ReadData,
-  ST25DVxxKC_WriteData,
+  ST25DVxxKC_WriteData
 };
 
 
@@ -91,12 +92,13 @@ int32_t ST25DVxxKC_RegisterBusIO(ST25DVxxKC_Object_t *const pObj, const ST25DVxx
   }
   else
   {
-    pObj->IO.Init        = pIO->Init;
-    pObj->IO.DeInit      = pIO->DeInit;
-    pObj->IO.Write       = pIO->Write;
-    pObj->IO.Read        = pIO->Read;
-    pObj->IO.IsReady     = pIO->IsReady;
-    pObj->IO.GetTick     = pIO->GetTick;
+    pObj->IO.Init           = pIO->Init;
+    pObj->IO.DeInit         = pIO->DeInit;
+    pObj->IO.Write          = pIO->Write;
+    pObj->IO.Read           = pIO->Read;
+    pObj->IO.IsReady        = pIO->IsReady;
+    pObj->IO.GetTick        = pIO->GetTick;
+    pObj->IO.DeviceAddress  = ST25DVXXKC_ADDR_DATA_I2C;
 
     pObj->Ctx.ReadReg  = ReadRegWrap;
     pObj->Ctx.WriteReg = WriteRegWrap;
@@ -106,13 +108,9 @@ int32_t ST25DVxxKC_RegisterBusIO(ST25DVxxKC_Object_t *const pObj, const ST25DVxx
     {
       ret = NFCTAG_ERROR;
     }
-    else if (pObj->IO.Init() != 0)
-    {
-      ret = NFCTAG_ERROR;
-    }
     else
     {
-      ret = NFCTAG_OK;
+      ret = (pObj->IO.Init() == 0) ? NFCTAG_OK : NFCTAG_ERROR;
     }
   }
 
@@ -131,10 +129,13 @@ int32_t ST25DVxxKC_Init(ST25DVxxKC_Object_t *const pObj)
   if (pObj->IsInitialized == 0U)
   {
     uint8_t nfctag_id;
-    (void)ST25DVxxKC_ReadID(pObj,&nfctag_id);
-    if((nfctag_id != I_AM_ST25DV04KC) && (nfctag_id != I_AM_ST25DV64KC))
+    ret = ST25DVxxKC_ReadID(pObj,&nfctag_id);
+    if (ret == NFCTAG_OK)
     {
-      ret = NFCTAG_ERROR;
+        if((nfctag_id != I_AM_ST25DV04KC) && (nfctag_id != I_AM_ST25DV64KC))
+        {
+          ret = NFCTAG_ERROR;
+        }
     }
   }
 
@@ -182,7 +183,7 @@ int32_t ST25DVxxKC_ReadICRev(const ST25DVxxKC_Object_t *const pObj, uint8_t *con
 int32_t ST25DVxxKC_IsDeviceReady(const ST25DVxxKC_Object_t *const pObj, const uint32_t Trials)
 {
   /* Test communication with device */
-  return pObj->IO.IsReady(ST25DVXXKC_ADDR_DATA_I2C, Trials);
+  return pObj->IO.IsReady(pObj->IO.DeviceAddress, Trials);
 }
 
 /**
@@ -206,6 +207,8 @@ int32_t ST25DVxxKC_GetGPOStatus(const ST25DVxxKC_Object_t *const pObj, uint16_t 
 {
   uint8_t reg_value;
   int32_t status;
+
+  *pGPOStatus = 0x0000;
   
   /* Read value of GPO register */
   status = ST25DVxxKC_GetGPO2_ALL(&(pObj->Ctx), &reg_value);
@@ -276,6 +279,8 @@ int32_t ST25DVxxKC_ReadITPulse(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC
   ST25DVxxKC_PULSE_DURATION_E reg_value;
   int32_t status;
   
+  *pITtime = ST25DVXXKC_302_US;
+
   /* Read ITtime register value */
   status = ST25DVxxKC_GetITTIME_DELAY(&(pObj->Ctx), (uint8_t *)&reg_value);
   if(status == NFCTAG_OK)
@@ -284,7 +289,7 @@ int32_t ST25DVxxKC_ReadITPulse(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC
     *pITtime = reg_value;
   }
   
-  return NFCTAG_OK;
+  return status;
 }
 
 /**
@@ -317,7 +322,7 @@ int32_t ST25DVxxKC_ReadData(const ST25DVxxKC_Object_t *const pObj, uint8_t *cons
                                                                                   const uint16_t NbByte)
 {
   /* Read Data in user memory */
-  return pObj->IO.Read(ST25DVXXKC_ADDR_DATA_I2C, TarAddr, pData, NbByte);
+  return pObj->IO.Read(pObj->IO.DeviceAddress, TarAddr, pData, NbByte);
 }
 
 /**
@@ -352,8 +357,7 @@ int32_t ST25DVxxKC_WriteData(const ST25DVxxKC_Object_t *const pObj, const uint8_
       split_data_nb = bytes_to_write;
     }
     /* Write split_data_nb bytes in memory */
-    ret = pObj->IO.Write(ST25DVXXKC_ADDR_DATA_I2C, mem_addr, pdata_index, split_data_nb);
-
+    ret = pObj->IO.Write(pObj->IO.DeviceAddress, mem_addr, pdata_index, split_data_nb);
     if(ret == NFCTAG_OK)
     {
       int32_t pollstatus;
@@ -362,9 +366,9 @@ int32_t ST25DVxxKC_WriteData(const ST25DVxxKC_Object_t *const pObj, const uint8_
       /* Wait until ST25DVxxKC is ready or timeout occurs */
       do
       {
-        pollstatus = pObj->IO.IsReady(ST25DVXXKC_ADDR_DATA_I2C, 1);
-      } while(((uint32_t)(pObj->IO.GetTick() - tickstart) < ST25DVXXKC_WRITE_TIMEOUT) \
-                                                                              && (pollstatus != NFCTAG_OK));
+        pollstatus = pObj->IO.IsReady(pObj->IO.DeviceAddress, 1);
+      } while(   ((uint32_t)pObj->IO.GetTick() < tickstart + ST25DVXXKC_WRITE_TIMEOUT)
+              && (pollstatus != NFCTAG_OK) );
       
       if(pollstatus != NFCTAG_OK)
       {
@@ -373,7 +377,7 @@ int32_t ST25DVxxKC_WriteData(const ST25DVxxKC_Object_t *const pObj, const uint8_
     }
 
     /* update index, dest address, size for next write */
-    pdata_index  = &pdata_index[split_data_nb];
+    pdata_index = &pdata_index[split_data_nb];
     mem_addr += split_data_nb;
     bytes_to_write -= split_data_nb;
   }
@@ -394,7 +398,7 @@ int32_t ST25DVxxKC_ReadRegister(const ST25DVxxKC_Object_t *const pObj, uint8_t *
                                                                                       const uint16_t NbByte)
 {
   /* Read Data in system memory */
-  return pObj->IO.Read(ST25DVXXKC_ADDR_SYST_I2C, TarAddr, pData, NbByte);
+  return pObj->IO.Read(pObj->IO.DeviceAddress | ST25DVXXKC_ADDR_SYSTEMMEMORY_BIT_I2C | ST25DVXXKC_ADDR_MODE_BIT_I2C, TarAddr, pData, NbByte);
 }
 
 /**
@@ -402,12 +406,11 @@ int32_t ST25DVxxKC_ReadRegister(const ST25DVxxKC_Object_t *const pObj, uint8_t *
   * @details  Needs the I2C Password presentation to be effective.
   * @param[in] pObj pointer to the device structure object.
   * @param[in] pData   Pointer on the data to be written.
-  * @param[in] TarAddr I2C register address to written.
+  * @param[in] TarAddr I2C register address to be written.
   * @param[in] NbByte  Number of bytes to be written.
   * @return   int32_t enum status.
   */
-int32_t ST25DVxxKC_WriteRegister(const ST25DVxxKC_Object_t *const pObj, const uint8_t *const pData, \
-                                                                        const uint16_t TarAddr, const uint16_t NbByte)
+int32_t ST25DVxxKC_WriteRegister(ST25DVxxKC_Object_t *const pObj, const uint8_t *const pData, const uint16_t TarAddr, const uint16_t NbByte)
 { 
   int32_t ret;
   uint16_t split_data_nb;
@@ -430,18 +433,28 @@ int32_t ST25DVxxKC_WriteRegister(const ST25DVxxKC_Object_t *const pObj, const ui
       split_data_nb = bytes_to_write;
     }
     /* Write split_data_nb bytes in register */
-    ret = pObj->IO.Write(ST25DVXXKC_ADDR_SYST_I2C, mem_addr, pdata_index, split_data_nb);
+    ret = pObj->IO.Write(pObj->IO.DeviceAddress | ST25DVXXKC_ADDR_SYSTEMMEMORY_BIT_I2C | ST25DVXXKC_ADDR_MODE_BIT_I2C, mem_addr, pdata_index, split_data_nb);
     if(ret == NFCTAG_OK)
     {
       int32_t pollstatus;
       /* Poll until EEPROM is available */
       uint32_t tickstart = pObj->IO.GetTick();
+
+      // Special case for ST25DVXXKC_I2CCFG_REG: align IO.DeviceAddress with register content
+      if ((mem_addr <= ST25DVXXKC_I2CCFG_REG) && (mem_addr + split_data_nb >= ST25DVXXKC_I2CCFG_REG)) {
+        uint8_t deviceCode = (pdata_index[ST25DVXXKC_I2CCFG_REG - mem_addr] & ST25DVXXKC_I2CCFG_DEVICECODE_MASK) >> ST25DVXXKC_I2CCFG_DEVICECODE_SHIFT;
+        uint8_t E0 = (pdata_index[ST25DVXXKC_I2CCFG_REG - mem_addr] & ST25DVXXKC_I2CCFG_E0_MASK) >> ST25DVXXKC_I2CCFG_E0_SHIFT;
+
+        pObj->IO.DeviceAddress = (pObj->IO.DeviceAddress & ~(ST25DVXXKC_ADDR_DEVICECODE_MASK)) | ((deviceCode << ST25DVXXKC_ADDR_DEVICECODE_SHIFT) & ST25DVXXKC_ADDR_DEVICECODE_MASK);
+        pObj->IO.DeviceAddress = (pObj->IO.DeviceAddress & ~(ST25DVXXKC_ADDR_E0_MASK)) | ((E0 << ST25DVXXKC_ADDR_E0_SHIFT) & ST25DVXXKC_ADDR_E0_MASK);
+      }
+
       /* Wait until ST25DVxxKC is ready or timeout occurs */
       do
       {
-        pollstatus = pObj->IO.IsReady(ST25DVXXKC_ADDR_DATA_I2C, 1);
-      } while(((uint32_t)(pObj->IO.GetTick() - tickstart) < ST25DVXXKC_WRITE_TIMEOUT) && \
-                                                                                      (pollstatus != NFCTAG_OK));
+        pollstatus = pObj->IO.IsReady(pObj->IO.DeviceAddress, 1);
+      } while(   ((uint32_t)pObj->IO.GetTick() < tickstart + ST25DVXXKC_WRITE_TIMEOUT)
+              && (pollstatus != NFCTAG_OK) );
       
       if(pollstatus != NFCTAG_OK)
       {
@@ -470,6 +483,9 @@ int32_t ST25DVxxKC_ReadUID(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC_UID
   uint8_t reg_value[8];
   uint8_t i;
   int32_t status;
+
+  pUid->MsbUid = 0x00000000;
+  pUid->LsbUid = 0x00000000;
   
   /* Read value of UID registers */
   status = ST25DVxxKC_GetUID(&(pObj->Ctx), reg_value);
@@ -516,6 +532,8 @@ int32_t ST25DVxxKC_ReadDsfidRFProtection(const ST25DVxxKC_Object_t *const pObj, 
 {
   uint8_t reg_value;
   int32_t status;
+
+  *pLockDsfid = ST25DVXXKC_LOCKED;
   
   /* Read register */
   status = ST25DVxxKC_GetLOCKDSFID(&(pObj->Ctx), &reg_value);
@@ -556,6 +574,8 @@ int32_t ST25DVxxKC_ReadAfiRFProtection(const ST25DVxxKC_Object_t *const pObj, ST
 {
   uint8_t reg_value;
   int32_t status;
+
+  *pLockAfi = ST25DVXXKC_LOCKED;
   
   /* Read register */
   status = ST25DVxxKC_GetLOCKAFI(&(pObj->Ctx), &reg_value);
@@ -585,6 +605,11 @@ int32_t ST25DVxxKC_ReadI2CProtectZone(const ST25DVxxKC_Object_t *const pObj, \
 {
   uint8_t reg_value;
   int32_t status;
+
+  pProtZone->ProtectZone1 = ST25DVXXKC_NO_PROT;
+  pProtZone->ProtectZone2 = ST25DVXXKC_NO_PROT;
+  pProtZone->ProtectZone3 = ST25DVXXKC_NO_PROT;
+  pProtZone->ProtectZone4 = ST25DVXXKC_NO_PROT;
   
   /* Read value of I2c Protected Zone register */
   status = ST25DVxxKC_GetI2CSS_ALL(&(pObj->Ctx), &reg_value);
@@ -741,6 +766,9 @@ int32_t ST25DVxxKC_ReadLockCCFile(const ST25DVxxKC_Object_t *const pObj, ST25DVx
   uint8_t reg_value;
   int32_t status;
   
+  pLockCCFile->LckBck0 = ST25DVXXKC_UNLOCKED;
+  pLockCCFile->LckBck1 = ST25DVXXKC_UNLOCKED;
+
   /* Get actual LOCKCCFILE register value */
   status = ST25DVxxKC_GetLOCKCCFILE_ALL(&(pObj->Ctx), &reg_value);
   if(status == NFCTAG_OK)
@@ -819,6 +847,8 @@ int32_t ST25DVxxKC_ReadLockCFG(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC
   uint8_t reg_value;
   int32_t status;
   
+  *pLockCfg = ST25DVXXKC_UNLOCKED;
+
   /* Get actual LOCKCCFILE register value */
   status = ST25DVxxKC_GetLOCKCFG_B0(&(pObj->Ctx), &reg_value);
   if(status == NFCTAG_OK)
@@ -833,7 +863,7 @@ int32_t ST25DVxxKC_ReadLockCFG(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC
       *pLockCfg = ST25DVXXKC_UNLOCKED;
     }
   }
-  return NFCTAG_OK;
+  return status;
 }
 
 /**
@@ -860,7 +890,7 @@ int32_t ST25DVxxKC_WriteLockCFG(const ST25DVxxKC_Object_t *const pObj, const ST2
   * @param[in] PassWord Password value on 32bits
   * @return int32_t enum status.
   */
-int32_t ST25DVxxKC_PresentI2CPassword(const ST25DVxxKC_Object_t *const pObj, const ST25DVxxKC_PASSWD_t PassWord)
+int32_t ST25DVxxKC_PresentI2CPassword(ST25DVxxKC_Object_t *const pObj, const ST25DVxxKC_PASSWD_t PassWord)
 {
   uint8_t ai2c_message[17] = {0};
   uint8_t i;
@@ -886,7 +916,7 @@ int32_t ST25DVxxKC_PresentI2CPassword(const ST25DVxxKC_Object_t *const pObj, con
   * @param[in] PassWord New I2C PassWord value on 32bits.
   * @return int32_t enum status.
   */
-int32_t ST25DVxxKC_WriteI2CPassword(const ST25DVxxKC_Object_t *const pObj, const ST25DVxxKC_PASSWD_t PassWord)
+int32_t ST25DVxxKC_WriteI2CPassword(ST25DVxxKC_Object_t *const pObj, const ST25DVxxKC_PASSWD_t PassWord)
 {
   uint8_t ai2c_message[17] = {0};
   uint8_t i;
@@ -918,6 +948,9 @@ int32_t ST25DVxxKC_ReadRFZxSS(const ST25DVxxKC_Object_t *const pObj, const ST25D
 {
   uint8_t reg_value = 0;
   int32_t status;
+
+  pRfprotZone->PasswdCtrl = ST25DVXXKC_NOT_PROTECTED;
+  pRfprotZone->RWprotection = ST25DVXXKC_NO_PROT;
   
   /* Read actual value of Sector Security Status register */
   switch(Zone)
@@ -1040,6 +1073,8 @@ int32_t ST25DVxxKC_ReadEndZonex(const ST25DVxxKC_Object_t *const pObj, const ST2
 {
   int32_t status;
 
+  *pEndZ = 0x00;
+
   /* Read the corresponding End zone */ 
   switch(EndZone)
   {
@@ -1136,6 +1171,11 @@ int32_t ST25DVxxKC_InitEndZone(const ST25DVxxKC_Object_t *const pObj)
   {
     ret = ST25DVxxKC_WriteEndZonex(pObj, ST25DVXXKC_ZONE_END1, endval);
   }
+
+  if((ret == NFCTAG_OK) || (ret == NFCTAG_NACK))
+  {
+    ret = NFCTAG_OK;
+  }
   
   return ret;
 }
@@ -1204,23 +1244,28 @@ int32_t ST25DVxxKC_CreateUserZone(const ST25DVxxKC_Object_t *const pObj, const u
     ret = ST25DVxxKC_InitEndZone(pObj);
   }
   
-  if(ret == NFCTAG_OK)
+  if((ret == NFCTAG_OK) || (ret == NFCTAG_NACK))
   {
     /* Then Write corresponding value for each zone */
     EndVal = (uint8_t)((Zone1Length_tmp / 32U) - 1U);
     ret = ST25DVxxKC_WriteEndZonex(pObj, ST25DVXXKC_ZONE_END1, EndVal);
   }
 
-  if(ret == NFCTAG_OK)
+  if((ret == NFCTAG_OK) || (ret == NFCTAG_NACK))
   {  
     EndVal = (uint8_t)(((Zone1Length_tmp + Zone2Length_tmp) / 32U) - 1U);
     ret = ST25DVxxKC_WriteEndZonex(pObj, ST25DVXXKC_ZONE_END2, EndVal);
   }
 
-  if(ret == NFCTAG_OK)
+  if((ret == NFCTAG_OK) || (ret == NFCTAG_NACK))
   { 
     EndVal = (uint8_t)(((Zone1Length_tmp + Zone2Length_tmp + Zone3Length_tmp) / 32U) - 1U);
     ret = ST25DVxxKC_WriteEndZonex(pObj, ST25DVXXKC_ZONE_END3, EndVal);
+  }
+
+  if((ret == NFCTAG_OK) || (ret == NFCTAG_NACK))
+  {
+    ret = NFCTAG_OK;
   }
   
   return ret;
@@ -1238,6 +1283,8 @@ int32_t ST25DVxxKC_ReadMemSize(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC
   uint8_t memsize_lsb;
   int32_t status;
   
+  pSizeInfo->Mem_Size = 0;
+
   /* Read actual value of MEM_SIZE register */
   status = ST25DVxxKC_GetMEM_SIZE_LSB(&(pObj->Ctx), &memsize_lsb);
   if(status == NFCTAG_OK)
@@ -1246,7 +1293,7 @@ int32_t ST25DVxxKC_ReadMemSize(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC
     if(status == NFCTAG_OK)
     {
       status = ST25DVxxKC_GetBLK_SIZE(&(pObj->Ctx), &(pSizeInfo->BlockSize));
-      if(status != NFCTAG_OK)
+      if(status == NFCTAG_OK)
       {
         /* Extract Memory information */
         pSizeInfo->Mem_Size = memsize_msb;
@@ -1268,12 +1315,14 @@ int32_t ST25DVxxKC_ReadEHMode(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC_
   uint8_t reg_value;
   int32_t status;
   
+  *pEH_mode = ST25DVXXKC_EH_ACTIVE_AFTER_BOOT;
+
   /* Read actual value of EH_MODE register */
   status = ST25DVxxKC_GetEH_MODE(&(pObj->Ctx), &reg_value);
   if(status == NFCTAG_OK)
   {
     /* Extract EH_mode configuration */
-    if(reg_value > 0U)
+    if(reg_value != 0U)
     {
       *pEH_mode = ST25DVXXKC_EH_ON_DEMAND;
     }
@@ -1314,6 +1363,9 @@ int32_t ST25DVxxKC_ReadRFMngt(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC_
   int32_t status;
   uint8_t reg_value = 0;
   
+  pRF_Mngt->RfDisable = ST25DVXXKC_DISABLE;
+  pRF_Mngt->RfSleep = ST25DVXXKC_DISABLE;
+
   /* Read actual value of RF_MNGT register */
   status = ST25DVxxKC_GetRF_MNGT_ALL(&(pObj->Ctx), &reg_value);
 
@@ -1367,13 +1419,15 @@ int32_t ST25DVxxKC_GetRFDisable(const ST25DVxxKC_Object_t *const pObj, ST25DVxxK
   int32_t status;
   uint8_t reg_value = 0;
   
+  *pRFDisable = ST25DVXXKC_DISABLE;
+
   /* Read actual value of RF_MNGT register */
   status = ST25DVxxKC_GetRF_MNGT_RFDIS(&(pObj->Ctx), &reg_value);
   
   /* Extract RFDisable information */
   if(status == NFCTAG_OK)
   {
-    if(reg_value > 0U)
+    if(reg_value != 0U)
     {
       *pRFDisable = ST25DVXXKC_ENABLE;
     }
@@ -1425,6 +1479,7 @@ int32_t ST25DVxxKC_GetRFSleep(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC_
   int32_t status;
   uint8_t reg_value = 0;
   
+  *pRFSleep = ST25DVXXKC_DISABLE;
   
   /* Read actual value of RF_MNGT register */
   status = ST25DVxxKC_GetRF_MNGT_RFSLEEP(&(pObj->Ctx), &reg_value);
@@ -1432,7 +1487,7 @@ int32_t ST25DVxxKC_GetRFSleep(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC_
   /* Extract RFDisable information */
   if(status == NFCTAG_OK)
   {
-    if(reg_value > 0U)
+    if(reg_value != 0U)
     {
       *pRFSleep = ST25DVXXKC_ENABLE;
     }
@@ -1484,12 +1539,14 @@ int32_t ST25DVxxKC_ReadMBMode(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC_
   uint8_t reg_value;
   int32_t status;
   
-  /* Read actual value of MB_MODE register */
-  status = ST25DVxxKC_GetMB_MODE_RW(&(pObj->Ctx), &reg_value);
+  *pMB_mode = ST25DVXXKC_DISABLE;
+
+  /* Read actual value of FTM register */
+  status = ST25DVxxKC_GetFTM_MBMODE(&(pObj->Ctx), &reg_value);
   if(status == NFCTAG_OK)
   {
     /* Extract Mailbox mode status */
-    if(reg_value > 0U)
+    if(reg_value != 0U)
     {
       *pMB_mode = ST25DVXXKC_ENABLE;
     }
@@ -1515,8 +1572,8 @@ int32_t ST25DVxxKC_WriteMBMode(const ST25DVxxKC_Object_t *const pObj, const ST25
   /* Update Mailbox mode status */
   reg_value = (uint8_t)MB_mode;
   
-  /* Write MB_MODE register */
-  status = ST25DVxxKC_SetMB_MODE_RW(&(pObj->Ctx), &reg_value);
+  /* Write FTM register */
+  status = ST25DVxxKC_SetFTM_MBMODE(&(pObj->Ctx), &reg_value);
 
   return status;
 }
@@ -1532,7 +1589,7 @@ int32_t ST25DVxxKC_ReadMBWDG(const ST25DVxxKC_Object_t *const pObj, uint8_t *con
   int32_t status;
   
   /* Read actual value of MB_WDG register */
-  status = ST25DVxxKC_GetMB_WDG_DELAY(&(pObj->Ctx), pWdgDelay);
+  status = ST25DVxxKC_GetFTM_MBWDG(&(pObj->Ctx), pWdgDelay);
   
   return status;
 }
@@ -1547,7 +1604,7 @@ int32_t ST25DVxxKC_ReadMBWDG(const ST25DVxxKC_Object_t *const pObj, uint8_t *con
 int32_t ST25DVxxKC_WriteMBWDG(const ST25DVxxKC_Object_t *const pObj, const uint8_t WdgDelay)
 {
    /* Write MB_WDG register */
-  return ST25DVxxKC_SetMB_WDG_DELAY(&(pObj->Ctx), &WdgDelay);
+  return ST25DVxxKC_SetFTM_MBWDG(&(pObj->Ctx), &WdgDelay);
 }
 
 /**
@@ -1570,7 +1627,7 @@ int32_t ST25DVxxKC_ReadMailboxData(const ST25DVxxKC_Object_t *const pObj, uint8_
   else
   {
     /* Read Data in user memory */
-    ret = pObj->IO.Read(ST25DVXXKC_ADDR_DATA_I2C, ST25DVXXKC_MAILBOX_RAM_REG + Offset, pData, NbByte);
+    ret = pObj->IO.Read(pObj->IO.DeviceAddress, ST25DVXXKC_MAILBOX_RAM_REG + Offset, pData, NbByte);
   }
   
   return ret;
@@ -1592,7 +1649,7 @@ int32_t ST25DVxxKC_WriteMailboxData(const ST25DVxxKC_Object_t *const pObj, const
   if(NbByte <= ST25DVXXKC_MAX_MAILBOX_LENGTH)
   {
     /* Write NbByte data in memory */
-    status =  pObj->IO.Write(ST25DVXXKC_ADDR_DATA_I2C, ST25DVXXKC_MAILBOX_RAM_REG, pData, NbByte);
+    status =  pObj->IO.Write(pObj->IO.DeviceAddress, ST25DVXXKC_MAILBOX_RAM_REG, pData, NbByte);
   }
   else
   {
@@ -1621,7 +1678,7 @@ int32_t ST25DVxxKC_ReadMailboxRegister(const ST25DVxxKC_Object_t *const pObj, ui
   }
   else
   {
-    ret = pObj->IO.Read(ST25DVXXKC_ADDR_DATA_I2C, TarAddr,pData, NbByte);
+    ret = pObj->IO.Read(pObj->IO.DeviceAddress, TarAddr,pData, NbByte);
   }
   
   return ret;
@@ -1647,7 +1704,7 @@ int32_t ST25DVxxKC_WriteMailboxRegister(const ST25DVxxKC_Object_t *const pObj, c
   else
   {
     /* Write NbByte data in memory */
-    ret = pObj->IO.Write(ST25DVXXKC_ADDR_DATA_I2C, TarAddr,pData, NbByte);
+    ret = pObj->IO.Write(pObj->IO.DeviceAddress, TarAddr,pData, NbByte);
   }
   
   return ret;
@@ -1665,12 +1722,14 @@ int32_t ST25DVxxKC_ReadI2CSecuritySession_Dyn(const ST25DVxxKC_Object_t *const p
   uint8_t reg_value;
   int32_t status;
 
+  *pSession = ST25DVXXKC_SESSION_CLOSED;
+
   /* Read actual value of I2C_SSO_DYN register */
   status = ST25DVxxKC_GetI2C_SSO_DYN_I2CSSO(&(pObj->Ctx), &reg_value);
   if(status == NFCTAG_OK)
   {
     /* Extract Open session information */
-    if(reg_value > 0U)
+    if(reg_value != 0U)
     {
       *pSession = ST25DVXXKC_SESSION_OPEN;
     }
@@ -1726,12 +1785,14 @@ int32_t ST25DVxxKC_GetGPO_en_Dyn(const ST25DVxxKC_Object_t *const pObj, ST25DVxx
   uint8_t reg_value;
   int32_t status;
   
+  *pGPO_en = ST25DVXXKC_DISABLE;
+
   /* Read actual value of GPO_DYN register */
   status = ST25DVxxKC_GetGPO_DYN_ENABLE(&(pObj->Ctx), &reg_value);
   if(status == NFCTAG_OK)
   {
     /* Extract GPO enable status information */
-    if(reg_value > 0U)
+    if(reg_value != 0U)
     {
       *pGPO_en = ST25DVXXKC_ENABLE;
     }
@@ -1780,6 +1841,11 @@ int32_t ST25DVxxKC_ReadEHCtrl_Dyn(const ST25DVxxKC_Object_t *const pObj, ST25DVx
   int32_t status;
   uint8_t reg_value = 0;
   
+  pEH_CTRL->EH_EN_Mode = ST25DVXXKC_DISABLE;
+  pEH_CTRL->EH_on = ST25DVXXKC_DISABLE;
+  pEH_CTRL->Field_on = ST25DVXXKC_DISABLE;
+  pEH_CTRL->VCC_on = ST25DVXXKC_DISABLE;
+
   /* Read actual value of ST25DVxxKC_EH_CTRL_DYN_REG register */
   status = ST25DVxxKC_GetEH_CTRL_DYN_ALL(&(pObj->Ctx), &reg_value);
   
@@ -1840,12 +1906,14 @@ int32_t ST25DVxxKC_GetEHENMode_Dyn(const ST25DVxxKC_Object_t *const pObj, ST25DV
   uint8_t reg_value;
   int32_t status;
   
+  *pEH_Val = ST25DVXXKC_DISABLE;
+
   /* Read actual value of EH_CTRL_DYN register */
   status = ST25DVxxKC_GetEH_CTRL_DYN_EH_EN(&(pObj->Ctx), &reg_value);
   if(status == NFCTAG_OK)
   {
     /* Extract Energy Harvesting status information */
-    if(reg_value > 0U)
+    if(reg_value != 0U)
     {
       *pEH_Val = ST25DVXXKC_ENABLE;
     }
@@ -1894,13 +1962,15 @@ int32_t ST25DVxxKC_GetEHON_Dyn(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC
   int32_t status;
   uint8_t reg_value = 0;
   
+  *pEHON = ST25DVXXKC_DISABLE;
+
   /* Read actual value of EH_CTRL_DYN register */
   status = ST25DVxxKC_GetEH_CTRL_DYN_EH_ON(&(pObj->Ctx), &reg_value);
   
   /* Extract RF Field information */
   if(status == NFCTAG_OK)
   {
-    if(reg_value > 0U)
+    if(reg_value != 0U)
     {
       *pEHON = ST25DVXXKC_ENABLE;
     }
@@ -1924,13 +1994,15 @@ int32_t ST25DVxxKC_GetRFField_Dyn(const ST25DVxxKC_Object_t *const pObj, ST25DVx
   int32_t status;
   uint8_t reg_value = 0;
   
+  *pRF_Field = ST25DVXXKC_FIELD_OFF;
+
   /* Read actual value of EH_CTRL_DYN register */
   status = ST25DVxxKC_GetEH_CTRL_DYN_FIELD_ON(&(pObj->Ctx), &reg_value);
   
   /* Extract RF Field information */
   if(status == NFCTAG_OK)
   {
-    if(reg_value > 0U)
+    if(reg_value != 0U)
     {
       *pRF_Field = ST25DVXXKC_FIELD_ON;
     }
@@ -1954,13 +2026,15 @@ int32_t ST25DVxxKC_GetVCC_Dyn(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC_
   int32_t status;
   uint8_t reg_value = 0;
   
+  *pVCC = ST25DVXXKC_VCC_OFF;
+
   /* Read actual value of EH_CTRL_DYN register */
   status = ST25DVxxKC_GetEH_CTRL_DYN_VCC_ON(&(pObj->Ctx), &reg_value);
   
   /* Extract VCC information */
   if(status == NFCTAG_OK)
   {
-    if(reg_value > 0U)
+    if(reg_value != 0U)
     {
       *pVCC = ST25DVXXKC_VCC_ON;
     }
@@ -1984,6 +2058,9 @@ int32_t ST25DVxxKC_ReadRFMngt_Dyn(const ST25DVxxKC_Object_t *const pObj, ST25DVx
   int32_t status;
   uint8_t reg_value = 0;
   
+  pRF_Mngt->RfDisable = ST25DVXXKC_DISABLE;
+  pRF_Mngt->RfSleep = ST25DVXXKC_DISABLE;
+
   /* Read actual value of RF_MNGT_DYN register */
   status = ST25DVxxKC_GetRF_MNGT_DYN_ALL(&(pObj->Ctx), &reg_value);
   
@@ -2036,13 +2113,15 @@ int32_t ST25DVxxKC_GetRFDisable_Dyn(const ST25DVxxKC_Object_t *const pObj, ST25D
   int32_t status;
   uint8_t reg_value = 0;
   
+  *pRFDisable = ST25DVXXKC_DISABLE;
+
   /* Read actual value of RF_MNGT_DYN register */
   status = ST25DVxxKC_GetRF_MNGT_DYN_RFDIS(&(pObj->Ctx), &reg_value);
   
   /* Extract RFDisable information */
   if(status == NFCTAG_OK)
   {
-    if(reg_value > 0U)
+    if(reg_value != 0U)
     {
       *pRFDisable = ST25DVXXKC_ENABLE;
     }
@@ -2090,13 +2169,15 @@ int32_t ST25DVxxKC_GetRFSleep_Dyn(const ST25DVxxKC_Object_t *const pObj, ST25DVx
   int32_t status;
   uint8_t reg_value = 0;
   
+  *pRFSleep = ST25DVXXKC_DISABLE;
+
   /* Read actual value of RF_MNGT_DYN register */
   status = ST25DVxxKC_GetRF_MNGT_DYN_RFSLEEP(&(pObj->Ctx), &reg_value);
   
   /* Extract RFSleep information */
   if(status == NFCTAG_OK)
   {
-    if(reg_value > 0U)
+    if(reg_value != 0U)
     {
       *pRFSleep = ST25DVXXKC_ENABLE;
     }
@@ -2134,6 +2215,58 @@ int32_t ST25DVxxKC_ResetRFSleep_Dyn(const ST25DVxxKC_Object_t *const pObj)
 }
 
 /**
+  * @brief  Reads the RFOff dynamic register information.
+  * @param[in] pObj pointer to the device structure object.
+  * @param[out] pRFSleep Pointer on a ST25DVxxKC_EN_STATUS values used to return the RF Off state.
+  * @return int32_t enum status.
+  */
+int32_t ST25DVxxKC_GetRFOff_Dyn(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC_EN_STATUS_E *const pRFSleep)
+{
+  int32_t status;
+  uint8_t reg_value = 0;
+  
+  *pRFSleep = ST25DVXXKC_DISABLE;
+
+  /* Read actual value of RF_MNGT_DYN register */
+  status = ST25DVxxKC_GetRF_MNGT_DYN_RFOFF(&(pObj->Ctx), &reg_value);
+  
+  /* Extract RFOff information */
+  if(status == NFCTAG_OK)
+  {
+    if(reg_value != 0U)
+    {
+      *pRFSleep = ST25DVXXKC_ENABLE;
+    }
+    else
+    {
+      *pRFSleep = ST25DVXXKC_DISABLE;
+    }
+  }
+  
+  return status;
+}
+
+/**
+  * @brief  Sets the RF Off dynamic configuration.
+  * @param[in] pObj pointer to the device structure object.
+  * @return int32_t enum status.
+  */
+int32_t ST25DVxxKC_SetRFOff_Dyn(const ST25DVxxKC_Object_t *const pObj)
+{
+  return ST25DVxxKC_WriteI2CSlaveMode(pObj, ST25DVXXKC_SLAVE_MODE_RFOFF);
+}
+
+/**
+  * @brief  Unsets the RF Off dynamic configuration.
+  * @param[in] pObj pointer to the device structure object.
+  * @return int32_t enum status.
+  */
+int32_t ST25DVxxKC_ResetRFOff_Dyn(const ST25DVxxKC_Object_t *const pObj)
+{
+  return ST25DVxxKC_WriteI2CSlaveMode(pObj, ST25DVXXKC_SLAVE_MODE_RFON);
+}
+
+/**
   * @brief  Reads the Mailbox ctrl dynamic register.
   * @param[in] pObj pointer to the device structure object.
   * @param[out] pCtrlStatus Pointer on a ST25DVxxKC_MB_CTRL_DYN_STATUS structure used to return
@@ -2145,6 +2278,13 @@ int32_t ST25DVxxKC_ReadMBCtrl_Dyn(const ST25DVxxKC_Object_t *const pObj, \
 {
   uint8_t reg_value;
   int32_t status;
+
+  pCtrlStatus->MbEnable    = 0x00;
+  pCtrlStatus->HostPutMsg  = 0x00;
+  pCtrlStatus->RfPutMsg    = 0x00;
+  pCtrlStatus->HostMissMsg = 0x00;
+  pCtrlStatus->RFMissMsg   = 0x00;
+  pCtrlStatus->CurrentMsg = ST25DVXXKC_NO_MSG;
   
   /* Read MB_CTRL_DYN register */
   status = ST25DVxxKC_GetMB_CTRL_DYN_ALL(&(pObj->Ctx), &reg_value);
@@ -2193,11 +2333,13 @@ int32_t ST25DVxxKC_GetMBEN_Dyn(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC
   uint8_t reg_value;
   int32_t status;
   
+  *pMBEN = ST25DVXXKC_DISABLE;
+
   /* Read MB_CTRL_DYN register */
   status = ST25DVxxKC_GetMB_CTRL_DYN_MBEN(&(pObj->Ctx),&reg_value);
   if(status == NFCTAG_OK)
   {
-    if(reg_value > 0U)
+    if(reg_value != 0U)
     {
       *pMBEN = ST25DVXXKC_ENABLE;
     }
@@ -2263,11 +2405,11 @@ static int32_t ReadRegWrap(const void *const handle, const uint16_t Reg, uint8_t
   
   if((Reg & (ST25DVXXKC_IS_DYNAMIC_REGISTER)) == ST25DVXXKC_IS_DYNAMIC_REGISTER)
   {
-    ret = pObj->IO.Read(ST25DVXXKC_ADDR_DATA_I2C, Reg, pData, len);
+    ret = pObj->IO.Read(pObj->IO.DeviceAddress, Reg, pData, len);
   }
   else
   {
-    ret = pObj->IO.Read(ST25DVXXKC_ADDR_SYST_I2C, Reg, pData, len);
+    ret = pObj->IO.Read(pObj->IO.DeviceAddress | ST25DVXXKC_ADDR_SYSTEMMEMORY_BIT_I2C | ST25DVXXKC_ADDR_MODE_BIT_I2C, Reg, pData, len);
   }
   
   return ret;
@@ -2289,24 +2431,33 @@ static int32_t WriteRegWrap(const void *const handle, const uint16_t Reg, const 
   
   if((Reg & (ST25DVXXKC_IS_DYNAMIC_REGISTER)) == ST25DVXXKC_IS_DYNAMIC_REGISTER)
   {
-    ret = pObj->IO.Write(ST25DVXXKC_ADDR_DATA_I2C, Reg, pData, len);
+    ret = pObj->IO.Write(pObj->IO.DeviceAddress, Reg, pData, len);
   }
   else
   {
-    ret = pObj->IO.Write(ST25DVXXKC_ADDR_SYST_I2C, Reg, pData, len);
-
+    ret = pObj->IO.Write(pObj->IO.DeviceAddress | ST25DVXXKC_ADDR_SYSTEMMEMORY_BIT_I2C | ST25DVXXKC_ADDR_MODE_BIT_I2C, Reg, pData, len);
     if(ret == NFCTAG_OK)
     {
       int32_t pollstatus;
       /* Poll until EEPROM is available */
       uint32_t tickstart = pObj->IO.GetTick();
+
+      // Special case for ST25DVXXKC_I2CCFG_REG: align IO.DeviceAddress with register content
+      if (Reg == ST25DVXXKC_I2CCFG_REG) {
+        uint8_t deviceCode = (*pData & ST25DVXXKC_I2CCFG_DEVICECODE_MASK) >> ST25DVXXKC_I2CCFG_DEVICECODE_SHIFT;
+        uint8_t E0 = (*pData & ST25DVXXKC_I2CCFG_E0_MASK) >> ST25DVXXKC_I2CCFG_E0_SHIFT;
+
+        pObj->IO.DeviceAddress = (pObj->IO.DeviceAddress & ~(ST25DVXXKC_ADDR_DEVICECODE_MASK)) | ((deviceCode << ST25DVXXKC_ADDR_DEVICECODE_SHIFT) & ST25DVXXKC_ADDR_DEVICECODE_MASK);
+        pObj->IO.DeviceAddress = (pObj->IO.DeviceAddress & ~(ST25DVXXKC_ADDR_E0_MASK)) | ((E0 << ST25DVXXKC_ADDR_E0_SHIFT) & ST25DVXXKC_ADDR_E0_MASK);
+      }
+
       /* Wait until ST25DVxxKC is ready or timeout occurs */
       do
       {
-        pollstatus = pObj->IO.IsReady(ST25DVXXKC_ADDR_SYST_I2C, 1);
-      } while(((pObj->IO.GetTick() - tickstart) < ST25DVXXKC_WRITE_TIMEOUT) && \
-                                                                            (pollstatus != NFCTAG_OK));
-      
+        pollstatus = pObj->IO.IsReady(pObj->IO.DeviceAddress | ST25DVXXKC_ADDR_SYSTEMMEMORY_BIT_I2C | ST25DVXXKC_ADDR_MODE_BIT_I2C, 1);
+      } while(   ((uint32_t)pObj->IO.GetTick() < tickstart + ST25DVXXKC_WRITE_TIMEOUT)
+              && (pollstatus != NFCTAG_OK) );
+    
       if(pollstatus != NFCTAG_OK)
       {
         ret = NFCTAG_TIMEOUT;
@@ -2318,12 +2469,118 @@ static int32_t WriteRegWrap(const void *const handle, const uint16_t Reg, const 
 }
 
 /**
+  * @brief  Sets the I2C slave mode.
+  * @param[in] pObj pointer to the device structure object.
+  * @param[in] slaveMode slave mode to be used with subsequent I2C communications.
+  * @return int32_t enum status.
+  */
+int32_t ST25DVxxKC_WriteI2CSlaveMode(const ST25DVxxKC_Object_t *const pObj, const ST25DVxxKC_SLAVE_MODE_E slaveMode)
+{
+  int32_t ret;
+  uint8_t reg_value;
+
+  if (slaveMode == ST25DVXXKC_SLAVE_MODE_RFOFF) {
+      reg_value = 0x01;
+      ret = ST25DVxxKC_SetI2CCFG_RFSWITCHOFF(&(pObj->Ctx), &reg_value);
+      if (ret == NFCTAG_OK) {
+        // artificially writes to ICREF_REG
+        // Caution: DVC DataSheet up to version 3 invertedRFSwitchOff/ON bits: b3=1b means RFSwitchOFF
+        ret = pObj->IO.Write((pObj->IO.DeviceAddress | ST25DVXXKC_ADDR_RFSWITCH_BIT_I2C) & ~ST25DVXXKC_ADDR_MODE_BIT_I2C, ST25DVXXKC_ICREF_REG, NULL, 0);
+      }
+  }
+  else if (slaveMode == ST25DVXXKC_SLAVE_MODE_RFON) {
+      reg_value = 0x01;
+      ret = ST25DVxxKC_SetI2CCFG_RFSWITCHOFF(&(pObj->Ctx), &reg_value);
+      if (ret == NFCTAG_OK) {
+        // artificially writes to ICREF_REG
+        // Caution: DVC DataSheet up to version 3 invertedRFSwitchOff/ON bits: b3=0b means RFSwitchON
+        ret = pObj->IO.Write(pObj->IO.DeviceAddress & ~(ST25DVXXKC_ADDR_RFSWITCH_BIT_I2C | ST25DVXXKC_ADDR_MODE_BIT_I2C), ST25DVXXKC_ICREF_REG, NULL, 0);
+      }
+  }
+  else {
+      // ST25DVXXKC_SLAVE_MODE_NORMAL
+      reg_value = 0x00;
+      ret = ST25DVxxKC_SetI2CCFG_RFSWITCHOFF(&(pObj->Ctx), &reg_value);
+  }
+  return ret;
+}
+
+/**
+  * @brief  Gets the I2C slave mode.
+  * @param[in] pObj pointer to the device structure object.
+  * @param[out] slaveMode pointer on slave mode being used with I2C communications.
+  * @return int32_t enum status.
+  */
+int32_t ST25DVxxKC_ReadI2CSlaveMode(const ST25DVxxKC_Object_t *const pObj, ST25DVxxKC_SLAVE_MODE_E *const slaveMode)
+{
+  uint8_t reg_value;
+  int32_t ret;
+
+  *slaveMode = ST25DVXXKC_SLAVE_MODE_NORMAL;
+
+  ret = ST25DVxxKC_GetI2CCFG_RFSWITCHOFF(&(pObj->Ctx), &reg_value);
+  if (ret == NFCTAG_OK) {
+      if (reg_value != 0x00) {
+          ret = ST25DVxxKC_GetRF_MNGT_DYN_RFOFF(&(pObj->Ctx), &reg_value);
+          if (ret == NFCTAG_OK) {
+              *slaveMode = (reg_value != 0x00)  ? ST25DVXXKC_SLAVE_MODE_RFOFF : ST25DVXXKC_SLAVE_MODE_NORMAL;
+          }
+      }
+      else {
+          *slaveMode = ST25DVXXKC_SLAVE_MODE_NORMAL;
+      }
+  }  
+  return ret;
+}
+
+/**
+  * @brief  Sets the I2C slave address.
+  * @param[in] pObj pointer to the device structure object.
+  * @param[in] deviceCode Device Code to be used with subsequent I2C communications.
+  * @param[in] E0 E0 bit to be used with subsequent I2C communications.
+  * @return int32_t enum status.
+  */
+int32_t ST25DVxxKC_WriteI2CSlaveAddress(const ST25DVxxKC_Object_t *const pObj, const uint8_t deviceCode, const uint8_t E0)
+{
+  int32_t ret;
+
+  ret = ST25DVxxKC_SetI2CCFG_DEVICECODE(&(pObj->Ctx), &deviceCode);
+  if (ret == NFCTAG_OK) {
+      ret = ST25DVxxKC_SetI2CCFG_E0(&(pObj->Ctx), &E0);
+  }
+  
+  return ret;
+}
+
+/**
+  * @brief  Gets the I2C slave address.
+  * @param[in] pObj pointer to the device structure object.
+  * @param[out] deviceCode pointer on Device Code being used with I2C communications.
+  * @param[out] E0 pointer on E0 value being used with I2C communications.
+  * @return int32_t enum status.
+  */
+int32_t ST25DVxxKC_ReadI2CSlaveAddress(const ST25DVxxKC_Object_t *const pObj, uint8_t *const deviceCode, uint8_t *const E0)
+{
+  int32_t ret;
+
+  *deviceCode = 0x00;
+  *E0 = 0x00;
+
+  ret = ST25DVxxKC_GetI2CCFG_DEVICECODE(&(pObj->Ctx), deviceCode);
+  if (ret == NFCTAG_OK) {
+    ret = ST25DVxxKC_GetI2CCFG_E0(&(pObj->Ctx), E0);
+  }
+
+  return ret;
+}
+
+
+/**
  * @}
  */
 
 /**
  * @}
  */
-
 
 

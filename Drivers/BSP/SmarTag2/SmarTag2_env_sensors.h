@@ -32,8 +32,12 @@ extern "C" {
 #include "SmarTag2_conf.h"
 #include "env_sensor.h"
 
+#ifndef USE_ENV_SENSOR_STTS22H_0
+#define USE_ENV_SENSOR_STTS22H_0         1
+#endif
+  
 #ifndef USE_ENV_SENSOR_LPS22DF_0
-#define USE_ENV_SENSOR_LPS22DF_0         1
+#define USE_ENV_SENSOR_LPS22DF_0         0
 #endif
 
 #if (USE_ENV_SENSOR_STTS22H_0 == 1)
@@ -51,6 +55,15 @@ extern "C" {
 #if (USE_ENV_SENSOR_LPS22DF_0 == 1)
 #define LPS22DF_0 (USE_ENV_SENSOR_STTS22H_0)
 #endif
+  
+/** @defgroup SMARTAG2_VDD_AMB_MCU_PIN SMARTAG2 VDD AMB MCU PIN
+ * @{
+ */
+#define VDD_AMB_MCU_Pin         GPIO_PIN_14
+#define VDD_AMB_MCU_GPIO_Port   GPIOB
+/**
+ * @}
+ */
 
 /* Environmental Sensor instance Info */
 typedef struct
@@ -85,6 +98,9 @@ typedef struct
 #if (ENV_INSTANCES_NBR == 0)
 #error "No environmental sensor instance has been selected"
 #endif
+
+void BSP_ENV_SENSOR_PowerOff(void);
+void BSP_ENV_SENSOR_PowerOn(void);
 
 int32_t BSP_ENV_SENSOR_Init(uint32_t Instance, uint32_t Functions);
 int32_t BSP_ENV_SENSOR_DeInit(uint32_t Instance);
